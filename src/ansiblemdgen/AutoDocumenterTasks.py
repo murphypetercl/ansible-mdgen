@@ -27,7 +27,7 @@ class TasksWriter:
 
         self.makeDocsTasksDir()
 
-        if (self.config.tasks['combinations'] != None):
+        if (self.config.tasks != None and self.config.tasks['combinations'] != None):
             self.iterateOnCombinations(self.config.get_base_dir(), self.config.tasks['combinations'])
         else:
             self.iterateOnFilesAndDirectories(self.tasks_dir)
