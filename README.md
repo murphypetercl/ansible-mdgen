@@ -17,7 +17,7 @@ pip install ansible-mdgen
 
 ## To run
 
-Call the python script passing in the path to the role
+Call ansible-mdgen passing in the path to the role
 ```
 ansible-mdgen <path_to_role>
 ```
