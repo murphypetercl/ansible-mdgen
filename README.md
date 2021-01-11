@@ -3,8 +3,17 @@ Generate documentation for ansible roles
 
 ## Description
 
-This package reads all task files and creates equivalent .md files in the docs directory of the role. If docs directory does not exist then it will be created. 
-The script iterates over each of the tasks files, parsing the yaml to extract the "name" values from each task and writing it to the .md file.
+This package reads all task files and creates equivalent .md files in the docs directory of the role. It also allows you to configure it so that you can combine tasks into a single .md file.
+
+If docs directory does not exist then it will be created. 
+
+The script iterates over each of the tasks files, parsing the yaml to extract the "name" values from each task and writing it to the .md file. So good descriptions on the task names will lead to better documentation.
+
+## To install
+```
+pip install ansible-mdgen
+```
+
 
 ## To run
 

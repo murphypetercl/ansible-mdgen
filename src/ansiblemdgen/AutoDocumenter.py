@@ -62,18 +62,22 @@ class Writer:
         dependencies = []
 
         galaxy_metafile = self.config.get_base_dir()+'/meta/main.yml'
-        with open(galaxy_metafile, 'r') as stream:
-            try:
-                metadata = yaml.safe_load(stream)
-                author = metadata.get("galaxy_info").get('author')
-                description = metadata.get("galaxy_info").get('description')
-                company = metadata.get("galaxy_info").get('company')
-                license = metadata.get("galaxy_info").get('license')
-                min_ansible_version = metadata.get("galaxy_info").get('min_ansible_version')
-                dependencies = metadata.get('dependencies')
 
-            except yaml.YAMLError as exc:
-                print(exc)
+        if os.path.isfile(galaxy_metafile):
+            with open(galaxy_metafile, 'r') as stream:
+                try:
+                    metadata = yaml.safe_load(stream)
+                    author = metadata.get("galaxy_info").get('author')
+                    description = metadata.get("galaxy_info").get('description')
+                    company = metadata.get("galaxy_info").get('company')
+                    license = metadata.get("galaxy_info").get('license')
+                    min_ansible_version = metadata.get("galaxy_info").get('min_ansible_version')
+                    dependencies = metadata.get('dependencies')
+
+                except yaml.YAMLError as exc:
+                    print(exc)
+        else:
+            self.log.info("(createIndexMDFile) No meta/main.yml file")
 
         mdFile = MdUtils(file_name=self.config.get_output_dir()+"/index.md",title=page_title)
 
