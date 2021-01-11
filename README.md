@@ -1,6 +1,6 @@
 # ansible-mdgen
 
-[![<CircleCI>](https://circleci.com/gh/circleci/murphypetercl/ansible-mdgen.svg?style=svg)](https://app.circleci.com/pipelines/github/murphypetercl/ansible-mdgen?branch=main)
+[![<CircleCI>](https://circleci.com/gh/murphypetercl/ansible-mdgen.svg?style=svg)](https://app.circleci.com/pipelines/github/murphypetercl/ansible-mdgen?branch=main)
 
 Generate documentation for ansible roles
 
