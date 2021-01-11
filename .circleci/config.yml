@@ -11,9 +11,8 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run:
-          command: ./ansible-mdgen
-          name: Test
+      - run: pip install -e .
+      - run: ansible-mdgen -V
 
 workflows:
   main:
