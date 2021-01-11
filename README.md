@@ -1,2 +1,54 @@
 # ansible-mdgen
-Python package to automate documentation generation for Ansible
+Generate documentation for ansible roles
+
+## Description
+
+This package reads all task files and creates equivalent .md files in the docs directory of the role. If docs directory does not exist then it will be created. 
+The script iterates over each of the tasks files, parsing the yaml to extract the "name" values from each task and writing it to the .md file.
+
+## To run
+
+Call the python script passing in the path to the role
+```
+ansible-mdgen <path_to_role>
+```
+
+See --help for all available options
+
+## To configure
+
+Create a configuration file called ansible-mdgen.yaml in the root of the project that you want to document. Alternatively rename the config file to something else and specify this in the command line using the -C or --conf options.
+```
+ansible-mdgen <path_to_role> --conf <name_of_config_file>
+```
+
+In the configuration file you can specify to combine various task files into a single md file for output e.g. 
+```
+
+combinations:
+  - filename: <name_of_single_file_to_create_1>
+    files_to_combine:
+      - name: <name_of_file_to_include_1>
+      - name: <name_of_file_to_include_2>
+      - name: <name_of_file_to_include_3>
+  - filename: <name_of_single_file_to_create_2>
+    files_to_combine:
+      - name: <name_of_file_to_include_1>
+      - name: <name_of_file_to_include_2>
+
+e.g. 
+
+combinations:
+  - SystemSetup:
+    - install-packages.yml
+    - configure-services.yml
+    - start-services.yml
+  - UserSetup:
+    - create-users.yml
+    - assign-privileges.yml
+```
+Combining tasks in a single .md file may be useful where related tasks have been broken down logically into different files but for documentation readability are better suited to being in one file.
+
+## To debug
+
+Pass the options -vvv for debugging
