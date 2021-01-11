@@ -41,7 +41,7 @@ clear_output = True
     # if config file is not in root of project, this is used to make output relative to config file
     _config_file_dir = ""
 
-    combinations = None
+    tasks = None
 
     # default debug level
     debug_level = "warn"
@@ -91,7 +91,7 @@ clear_output = True
         allow_to_overwrite = [
             "base_dir",
             "output_dir",
-            "combinations",
+            "tasks",
             "debug_level",
         ]
 

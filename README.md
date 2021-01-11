@@ -24,28 +24,31 @@ ansible-mdgen <path_to_role> --conf <name_of_config_file>
 
 In the configuration file you can specify to combine various task files into a single md file for output e.g. 
 ```
-
-combinations:
-  - filename: <name_of_single_file_to_create_1>
-    files_to_combine:
-      - name: <name_of_file_to_include_1>
-      - name: <name_of_file_to_include_2>
-      - name: <name_of_file_to_include_3>
-  - filename: <name_of_single_file_to_create_2>
-    files_to_combine:
-      - name: <name_of_file_to_include_1>
-      - name: <name_of_file_to_include_2>
+tasks:
+  combinations:
+    - filename: <name_of_single_file_to_create_1>
+      files_to_combine:
+        - name: <name_of_file_to_include_1>
+        - name: <name_of_file_to_include_2>
+        - name: <name_of_file_to_include_3>
+    - filename: <name_of_single_file_to_create_2>
+      files_to_combine:
+        - name: <name_of_file_to_include_1>
+        - name: <name_of_file_to_include_2>
 
 e.g. 
 
-combinations:
-  - SystemSetup:
-    - install-packages.yml
-    - configure-services.yml
-    - start-services.yml
-  - UserSetup:
-    - create-users.yml
-    - assign-privileges.yml
+tasks:
+  combinations:
+    - filename: SystemSetup:
+      files_to_combine:
+        - name: install-packages.yml
+        - name: configure-services.yml
+        - name: start-services.yml
+    - filename: UserSetup:
+      files_to_combine:
+        - name: create-users.yml
+        - name: assign-privileges.yml
 ```
 Combining tasks in a single .md file may be useful where related tasks have been broken down logically into different files but for documentation readability are better suited to being in one file.
 
