@@ -1,4 +1,7 @@
 # ansible-mdgen
+
+[![<CircleCI>](https://circleci.com/gh/circleci/murphypetercl/ansible-mdgen.svg?style=svg)](https://app.circleci.com/pipelines/github/murphypetercl/ansible-mdgen?branch=main)
+
 Generate documentation for ansible roles
 
 ## Description
@@ -64,3 +67,7 @@ Combining tasks in a single .md file may be useful where related tasks have been
 ## To debug
 
 Pass the options -vvv for debugging
+
+## Credits
+
+The idea for this project is based on (and includes some code from) [ansible-autodoc](https://github.com/AndresBott/ansible-autodoc) by Andres Bott so credit goes to him for his work.
