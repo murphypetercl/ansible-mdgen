@@ -9,10 +9,11 @@ from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
 import re
 
-class DefaultsWriter:
+class VariablesWriter:
 
     config = None
     defaults_dir = None
+    vars_dir = None
 
     _all_descriptions = {}
 
@@ -23,15 +24,24 @@ class DefaultsWriter:
         self.defaults_dir = self.config.get_base_dir()+"/defaults"
         self.log.info("Defaults directory: "+self.defaults_dir)
 
+        self.vars_dir = self.config.get_base_dir()+"/vars"
+        self.log.info("Vars directory: "+self.vars_dir)
+
     def render(self):
 
         self.makeDocsDefaultsDir()
 
         if (self.config.defaults != None and self.config.defaults['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.config.defaults['combinations'])
+            self.iterateOnCombinations(self.config.get_base_dir(), self.defaults_dir, self.config.get_output_defaults_dir(), self.config.defaults['combinations'])
         else:
-            self.iterateOnFilesAndDirectories(self.defaults_dir)
+            self.iterateOnFilesAndDirectories(self.defaults_dir, self.config.get_output_defaults_dir())
 
+        self.makeDocsVariablesDir()
+
+        if (self.config.variables != None and self.config.variables['combinations'] != None):
+            self.iterateOnCombinations(self.config.get_base_dir(), self.vars_dir, self.config.get_output_variables_dir(), self.config.variables['combinations'])
+        else:
+            self.iterateOnFilesAndDirectories(self.vars_dir, self.config.get_output_variables_dir())
 
     def makeDocsDefaultsDir(self):
         output_defaults_directory = self.config.get_output_defaults_dir()
@@ -39,60 +49,61 @@ class DefaultsWriter:
         if not os.path.exists(output_defaults_directory):
             os.makedirs(output_defaults_directory)
 
-    def iterateOnFilesAndDirectories(self, defaults_dir):
-        for (dirpath, dirnames, filenames) in walk(defaults_dir):
+    def makeDocsVariablesDir(self):
+        output_variables_directory = self.config.get_output_variables_dir()
+        self.log.debug("(makeDocsVariablesDir) Output Directory: "+output_variables_directory)
+        if not os.path.exists(output_variables_directory):
+            os.makedirs(output_variables_directory)
 
+    def iterateOnFilesAndDirectories(self, directory, output_directory):
+        for (dirpath, dirnames, filenames) in walk(directory):
             for filename in filenames:
                 if filename.endswith('.yml'):
-                    self.createMDFile(dirpath, filename)
+                    self.createMDFile(dirpath, output_directory, filename)
 
             for dirname in dirnames:
-                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname)
+                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname, output_directory+"/"+dirname)
 
-    def createMDFile(self, dirpath, filename):
+    def createMDFile(self, dirpath, output_directory, filename):
 
         self.log.info("(createMDFile) Create MD File")
-        docspath = dirpath.replace(self.defaults_dir,self.config.get_output_defaults_dir())
-        if not os.path.exists(docspath):
-            os.makedirs(docspath)
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
 
-        mdFile = MdUtils(file_name=self.config.get_output_defaults_dir()+"/"+filename.replace('.yml',''),title=filename.replace('.yml',''))
+        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace('.yml',''),title=filename)
         mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Defaults') 
+        mdFile.new_header(level=1, title='Variables') 
         mdFile.new_line("---")
 
-        mdFile.new_header(level=2, title=filename.replace('.yml','')) 
+        mdFile.new_header(level=2, title=filename) 
 
-        self.addDefaults(dirpath+"/"+filename, mdFile)
+        self.addVariables(dirpath+"/"+filename, mdFile)
 
-        mdFile.new_table_of_contents(table_title='Contents', depth=2)
+        mdFile.new_table_of_contents(table_title='Contents', depth=3)
         mdFile.create_md_file()
         self.log.info("(createMDFile) Create MD File Complete")
 
     
-    def addDefaults(self, filename, mdFile):
-        self.log.debug("(addDefaults) Filename: "+filename)
+    def addVariables(self, filename, mdFile):
+        self.log.debug("(addVariables) Filename: "+filename)
 
         self.getVarDescriptions(filename)
 
         with open(filename, 'r') as stream:
             try:
-                defaults = yaml.safe_load(stream)
+                variables = yaml.safe_load(stream)
 
-                if defaults != None:
-                    for default in defaults:
+                if variables != None:
+                    for variable in variables:
                         
                         mdFile.new_line("---")
-                        mdFile.new_header(level=3, title=default)
-
-                        mdFile.new_header(level=4, title='Description')
+                        mdFile.new_header(level=3, title=variable)
                         
-                        if(default in self._all_descriptions):
-                            mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[default][0]["value"],  default_flow_style=False))
+                        if(variable in self._all_descriptions):
+                            mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[variable][0]["value"],  default_flow_style=False))
 
-                        mdFile.new_header(level=4, title='Value')
                         mdFile.new_line("```")
-                        mdFile.new_paragraph(yaml.safe_dump(defaults[default],  default_flow_style=False))
+                        mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False))
                         mdFile.new_line("```")
 
             except yaml.YAMLError as exc:
@@ -130,13 +141,13 @@ class DefaultsWriter:
 
                 self._all_descriptions[item.key].append(item.get_obj())
 
-    def iterateOnCombinations(self, rolepath, combinations):
+    def iterateOnCombinations(self, rolepath, directory, output_directory, combinations):
         for combination in combinations:
-            self.createMDCombinationFile(combination['filename'], combination['files_to_combine'])
+            self.createMDCombinationFile(combination['filename'], directory, output_directory, combination['files_to_combine'])
 
-    def createMDCombinationFile(self, comboFilename, filenamesToCombine):
+    def createMDCombinationFile(self, comboFilename, directory, output_directory, filenamesToCombine):
 
-        comboFilenameAbs = self.config.get_output_defaults_dir()+"/"+comboFilename      
+        comboFilenameAbs = output_directory+"/"+comboFilename      
         comboFileDirectory = comboFilenameAbs[0:int(comboFilenameAbs.rfind('/'))]
 
         if not os.path.exists(comboFileDirectory):
@@ -144,14 +155,14 @@ class DefaultsWriter:
 
         mdFile = MdUtils(file_name=comboFilenameAbs,title=comboFilename[comboFilename.rfind('/')+1:])
         mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Defaults') 
+        mdFile.new_header(level=1, title='Variables') 
         for filename in filenamesToCombine:
             mdFile.new_line("")
             mdFile.new_header(level=2, title=filename['name']) 
 
-            self.addDefaults(self.defaults_dir+"/"+filename['name'], mdFile)
+            self.addVariables(directory+"/"+filename['name'], mdFile)
 
-        mdFile.new_table_of_contents(table_title='Contents', depth=2)
+        mdFile.new_table_of_contents(table_title='Contents', depth=3)
         mdFile.create_md_file()
 
 class AnnotationItem:

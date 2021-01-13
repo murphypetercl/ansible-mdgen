@@ -26,6 +26,7 @@ clear_output = True
     output_dir = "./docs"
     output_tasks_dir = "tasks"
     output_defaults_dir = "defaults"
+    output_variables_dir = "variables"
 
     output_overwrite = False
     clear_output = False
@@ -44,6 +45,7 @@ clear_output = True
 
     tasks = None
     defaults = None
+    variables = None
 
     # default debug level
     debug_level = "warn"
@@ -100,12 +102,26 @@ clear_output = True
         elif not os.path.isabs(self.output_defaults_dir):
             return os.path.realpath(self.get_output_dir()+"/"+self.output_defaults_dir)
 
+    def get_output_variables_dir(self):
+        """
+        get the relative path to cwd of the output directory for the documentation
+        :return: str path
+        """
+        if self.output_variables_dir == "":
+            return os.path.realpath(self.get_output_dir())
+        elif os.path.isabs(self.output_variables_dir):
+            return os.path.realpath(self.output_variables_dir)
+        elif not os.path.isabs(self.output_variables_dir):
+            return os.path.realpath(self.get_output_dir()+"/"+self.output_variables_dir)
+
     def load_config_file(self, file):
 
         allow_to_overwrite = [
             "base_dir",
             "output_dir",
             "tasks",
+            "defaults",
+            "variables",
             "debug_level",
         ]
 

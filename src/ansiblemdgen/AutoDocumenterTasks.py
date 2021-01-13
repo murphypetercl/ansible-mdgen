@@ -49,11 +49,16 @@ class TasksWriter:
     def createMDFile(self, dirpath, filename):
 
         self.log.info("(createMDFile) Create MD File")
+        self.log.debug("(createMDFile) dirpath: "+dirpath)
+        self.log.debug("(createMDFile) filename: "+filename)
+        
         docspath = dirpath.replace(self.tasks_dir,self.config.get_output_tasks_dir())
+        self.log.debug("(createMDFile) docspath: "+docspath)
+
         if not os.path.exists(docspath):
             os.makedirs(docspath)
 
-        mdFile = MdUtils(file_name=self.config.get_output_tasks_dir()+"/"+filename.replace('.yml',''),title=filename.replace('.yml',''))
+        mdFile = MdUtils(file_name=docspath+"/"+filename.replace('.yml',''),title=filename.replace('.yml',''))
         mdFile.new_line("---")
         mdFile.new_header(level=1, title='Tasks') 
         mdFile.new_line("---")

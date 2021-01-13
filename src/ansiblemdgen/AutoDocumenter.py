@@ -9,7 +9,7 @@ from os import walk
 from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
 from ansiblemdgen.AutoDocumenterTasks import TasksWriter
-from ansiblemdgen.AutoDocumenterDefaults import DefaultsWriter
+from ansiblemdgen.AutoDocumenterVariables import VariablesWriter
 
 class Writer:
 
@@ -43,8 +43,8 @@ class Writer:
         tasksWriter = TasksWriter()
         tasksWriter.render()
 
-        defaultsWriter = DefaultsWriter()
-        defaultsWriter.render()
+        variablesWriter = VariablesWriter()
+        variablesWriter.render()
 
 
     def makeDocsDir(self):
