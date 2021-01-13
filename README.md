@@ -52,17 +52,24 @@ e.g.
 
 tasks:
   combinations:
-    - filename: SystemSetup:
+    - filename: SystemSetup
       files_to_combine:
         - name: install-packages.yml
         - name: configure-services.yml
         - name: start-services.yml
-    - filename: UserSetup:
+    - filename: UserSetup
       files_to_combine:
         - name: create-users.yml
         - name: assign-privileges.yml
 ```
 Combining tasks in a single .md file may be useful where related tasks have been broken down logically into different files but for documentation readability are better suited to being in one file.
+
+## To annotate
+To provide and output default variable descriptions add a comment with the var annotation as follows:
+```
+# @var: <variable_name>: <variable_description>
+```
+Note: currently only available for defaults variable files... vars directory to follow...
 
 ## To debug
 

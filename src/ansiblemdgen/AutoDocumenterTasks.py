@@ -3,13 +3,10 @@
 from ansiblemdgen.Config import SingleConfig
 import sys
 import yaml
-import json
 import os
-import shutil
 from os import walk
 from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
-from mdutils import Html
 
 class TasksWriter:
 
