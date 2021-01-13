@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Peter Murphy
+  description: Role to install and configure Minio in distributed mode
+  company: My Company
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: RHEL 7
+      versions:
+        - 8
+
+  galaxy_tags: []
+
+dependencies: []

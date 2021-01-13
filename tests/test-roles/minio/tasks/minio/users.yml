@@ -1,0 +1,17 @@
+---
+
+# @action Minio-server-install-users # Create Minio group
+- name: Create Minio group
+  group:
+    name: "{{ minio_group }}"
+    state: present
+  tags: minio,users
+
+# @action Minio-server-install-users # Create Minio user
+- name: Create Minio user
+  user:
+    name: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    system: "yes"
+    shell: "/usr/sbin/nologin"
+  tags: minio,users

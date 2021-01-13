@@ -1,0 +1,24 @@
+---
+# tasks file for minio_server_install
+#
+# Set Environment
+#
+- name: Set proxy server if defined
+  set_fact:
+    env_proxy: "http://{{ local_proxy.host }}:{{ local_proxy.port }}"
+  when: "local_proxy is defined"
+  tags: minio
+
+#
+# Run OS specific commands
+#
+- name: Invoke OS specific process
+  include_tasks: "{{ outer_item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_system | lower }}.yml"
+      paths: 'tasks/'
+      skip: true
+  loop_control:
+    loop_var: outer_item
+  tags: minio

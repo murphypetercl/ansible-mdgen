@@ -1,0 +1,20 @@
+---
+
+- name: Enable firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Open firewall ssh port
+  firewalld:
+    port: "{{ ansible_ssh_port | default(22) }}/tcp"
+    permanent: yes
+    state: enabled
+
+- name: Open firewall minio ports
+  firewalld:
+    port: "{{ minio_port }}/tcp"
+    permanent: yes
+    state: enabled
+  notify: "minio reload firewalld"

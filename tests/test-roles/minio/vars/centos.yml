@@ -1,0 +1,10 @@
+---
+# vars file for minio_server_install.centos
+#
+# System Settings
+#
+
+#
+# Package Requirements
+#
+required_distribution_packages: []

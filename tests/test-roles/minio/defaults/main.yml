@@ -1,0 +1,80 @@
+---
+# defaults file for minio_server_install
+
+#######################
+# ALL Group Variables #
+#######################
+#
+# Local Environment Settings
+#
+# Dictionary of environment proxy server (optional)
+# local_proxy:
+#   host: "proxy.example.com"
+#   port: 3128
+
+##################
+# Host Variables #
+##################
+#
+# Host Settings
+#
+
+###################
+# Group Variables #
+###################
+#
+# Minio Settings
+#
+
+#
+# Volume Settings
+#
+# minio_volumes:
+#  /opt:
+#    drive: data
+#    size: 5g
+#  /var:
+#    drive: data
+#    size: 5g
+
+# @var minio_server_install_volume_groups: "See defaults.yml"  # Volume Group settings
+minio_server_install_volume_groups:
+  vg_min:
+    pv: /dev/sdd
+
+# @var minio_server_install_volumes: "See defaults.yml"  # Logical volume variable settings
+minio_server_install_volumes:
+  lv_min:
+    drive: vg_min
+    size: +100%FREE
+
+# @var minio_server_install_dir_mounts: "See defaults.yml"  # Directory for logical volume mount
+minio_server_install_dir_mounts:
+  /var/lib/minio:
+    src: /dev/vg_min/lv_min
+
+minio_server_datadirs: /var/lib/minio
+
+# Runtime user and group for the Minio server service
+minio_user: minio
+minio_group: minio
+
+minio_server_download_base_url: "https://dl.minio.io/server/minio/release/linux-amd64"
+
+minio_server_bin: /usr/local/bin/minio
+#minio_client_bin: /usr/local/bin/mc
+
+# Path to the file containing the ENV variables for the Minio server
+minio_server_envfile: /etc/default/minio
+
+minio_port: "9091"
+
+# Additional Minio server CLI options
+minio_server_opts: ""
+
+# Minio access and secret keys
+minio_access_key: ""
+minio_secret_key: ""
+
+# Additional environment variables to be set in minio server environment
+minio_server_env_extra: ""

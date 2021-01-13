@@ -55,5 +55,5 @@ node_tests/*
 # User-specific stuff:
 .idea/
 *.iml
-tests/sample-project/generated_doc/*
+tests/test-roles/minio/docs/*
 tests/sample-project/doc/*

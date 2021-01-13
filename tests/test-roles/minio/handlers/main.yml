@@ -1,0 +1,17 @@
+---
+- name: Reload minio systemd
+  systemd:
+    name: minio
+    daemon_reload: True
+
+- name: Restart minio
+  service:
+    name: minio
+    state: restarted
+
+- name: Reload firewalld service
+  systemd:
+    name: firewalld
+    state: reloaded
+  listen: "minio reload firewalld"
+  ignore_errors: true
