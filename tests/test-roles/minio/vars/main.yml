@@ -1,16 +1,4 @@
 ---
-# vars file for minio_server_install
-
-#
-# Package Requirements
-#
-required_packages: []
-
-#
-# Package Conflicts / Unused
-#
-remove_packages: []
-
 # @var: minio_server_download_url: URL to download minio from
 minio_server_download_url: "{{ minio_server_download_base_url }}/minio"
 

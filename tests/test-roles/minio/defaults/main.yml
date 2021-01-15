@@ -1,42 +1,50 @@
 ---
-# @var minio_server_install_volume_groups: "See defaults.yml"  # Volume Group settings
+# @var: minio_server_install_volume_groups: Volume Group settings
 minio_server_install_volume_groups:
   vg_min:
     pv: /dev/sdd
 
-# @var minio_server_install_volumes: "See defaults.yml"  # Logical volume variable settings
+# @var: minio_server_install_volumes: Logical volume variable settings
 minio_server_install_volumes:
   lv_min:
     drive: vg_min
     size: +100%FREE
 
-# @var minio_server_install_dir_mounts: "See defaults.yml"  # Directory for logical volume mount
+# @var: minio_server_install_dir_mounts: Directory for logical volume mount
 minio_server_install_dir_mounts:
   /var/lib/minio:
     src: /dev/vg_min/lv_min
 
+# @var: minio_server_datadirs: Minio server data directory
 minio_server_datadirs: /var/lib/minio
 
-# Runtime user and group for the Minio server service
+# @var: minio_user: Minio user
 minio_user: minio
+
+# @var: minio_group: Minio user group
 minio_group: minio
 
+# @var: minio_server_download_base_url: Base URL to download minio from
 minio_server_download_base_url: "https://dl.minio.io/server/minio/release/linux-amd64"
 
+# @var: minio_server_bin: Minio server bin directory
 minio_server_bin: /usr/local/bin/minio
-#minio_client_bin: /usr/local/bin/mc
 
-# Path to the file containing the ENV variables for the Minio server
+
+# @var: minio_server_envfile: Path to the file containing the ENV variables for the Minio server
 minio_server_envfile: /etc/default/minio
 
+# @var: minio_port: Minio server port 
 minio_port: "9091"
 
-# Additional Minio server CLI options
+# @var: minio_server_opts: Additional Minio server CLI options
 minio_server_opts: ""
 
-# Minio access and secret keys
+# @var: minio_access_key: Minio access key 
 minio_access_key: ""
+
+# @var: minio_secret_key: Minio secret key
 minio_secret_key: ""
 
-# Additional environment variables to be set in minio server environment
+# @var: minio_server_env_extra: Additional environment variables to be set in minio server environment
 minio_server_env_extra: ""
