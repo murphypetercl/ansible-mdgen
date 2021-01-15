@@ -5,10 +5,6 @@
   register: path_status
   tags: minio,volumes,dirs
 
-################################################################
-# TODO - Fix the below as it's not making minio the owner
-################################################################
-
 - name: Create directory if not already created
   file:
     path: "{{ item.key | lower }}"

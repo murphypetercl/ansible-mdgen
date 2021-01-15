@@ -3,6 +3,7 @@
 - name: "Get the Minio server checksum"
   set_fact:
     minio_server_checksum: "{{ lookup('url', minio_server_download_url + '.sha256sum').split(' ')[0] }}"
+  tags: minio,install
 
 # @action Minio-server-install-minio # Download Minio
 - name: Download the Minio server
@@ -21,6 +22,7 @@
   environment:
     http_proxy: "{% if env_proxy is defined %}{{ env_proxy }}{% endif %}"
     https_proxy: "{% if env_proxy is defined %}{{ env_proxy }}{% endif %}"
+  tags: minio,install
 
 - name: Generate the Minio server envfile
   template:
@@ -30,6 +32,7 @@
     group: "{{ minio_group }}"
     mode: 0640
   notify: restart minio
+  tags: minio,install
 
 - name: Create the Minio server systemd config
   template:
@@ -42,6 +45,7 @@
   notify:
     - reload minio systemd
     - restart minio
+  tags: minio,install
 
 - name: Create the Minio server init.d config
   template:
@@ -52,9 +56,11 @@
     mode: 0750
   when: ansible_service_mgr != "systemd"
   notify: restart minio
+  tags: minio,install
 
 - name: Enable and start the Minio service
   service:
     name: minio
     state: started
     enabled: true
+  tags: minio,install

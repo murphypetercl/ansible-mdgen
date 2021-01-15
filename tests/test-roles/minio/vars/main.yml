@@ -11,8 +11,8 @@ required_packages: []
 #
 remove_packages: []
 
-
+# @var: minio_server_download_url: URL to download minio from
 minio_server_download_url: "{{ minio_server_download_base_url }}/minio"
 
-# Minio server listen address
+# @var: minio_server_addr: Minio server listen address
 minio_server_addr: ":{{ minio_port }}"

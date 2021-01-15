@@ -5,12 +5,14 @@
     name: firewalld
     state: started
     enabled: yes
+  tags: minio,firewall
 
 - name: Open firewall ssh port
   firewalld:
     port: "{{ ansible_ssh_port | default(22) }}/tcp"
     permanent: yes
     state: enabled
+  tags: minio,firewall
 
 - name: Open firewall minio ports
   firewalld:
@@ -18,3 +20,4 @@
     permanent: yes
     state: enabled
   notify: "minio reload firewalld"
+  tags: minio,firewall

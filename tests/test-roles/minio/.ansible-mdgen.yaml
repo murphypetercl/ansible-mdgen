@@ -1,0 +1,18 @@
+---
+
+tasks:
+  combinations:
+    - filename: main
+      files_to_combine:
+        - name: main.yml
+    - filename: users
+      files_to_combine:
+        - name: minio/users.yml
+    - filename: file-system
+      files_to_combine:
+        - name: volumes.yml
+        - name: directories.yml
+    - filename: minio
+      files_to_combine:
+        - name: minio/minio.yml
+        - name: minio/firewall.yml

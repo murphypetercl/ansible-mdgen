@@ -3,12 +3,12 @@ galaxy_info:
   author: Peter Murphy
   description: Role to install and configure Minio in distributed mode
   company: My Company
-  license: MIT
+  license: None
   min_ansible_version: 2.9
   platforms:
-    - name: RHEL 7
+    - name: RedHat
       versions:
-        - 8
+        - 7.8
 
   galaxy_tags: []
 
