@@ -24,7 +24,7 @@ class install():
     def __init__(self):
 
         self.current_file_dir = os.path.dirname(os.path.abspath(__file__))
-        self.dest_libs_dir = "/root/py36-venv/lib64/python3.6/site-packages"
+        self.dest_libs_dir = "/root/venv/lib64/python3.6/site-packages"
         self.dest_bin= "/usr/bin"
         self.user_home = os.environ["HOME"]
         self.dry = False
