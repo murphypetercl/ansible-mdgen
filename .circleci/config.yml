@@ -17,6 +17,7 @@ jobs:
           args: pytest
           pkg-manager: pip
           pypi-cache: false
+      - run: pip install -e .
       - run:
           command: |
             pytest
