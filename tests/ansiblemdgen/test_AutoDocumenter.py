@@ -18,8 +18,12 @@ class TestGenerator(object):
         writer = Writer()
         writer.render()
 
-        rendered_file = open(str(tmpdir)+"/docs/index.md", "r")
-        line = rendered_file.readline()
-
-        print(line)
-        assert line == "\n"
+        assert os.path.isfile(str(tmpdir)+"/docs/index.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/defaults/main.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/tasks/directories.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/tasks/main.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/tasks/volumes.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/tasks/minio/minio.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/tasks/minio/users.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/tasks/minio/firewall.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/variables/main.md")
