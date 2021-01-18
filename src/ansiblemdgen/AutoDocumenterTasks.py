@@ -58,10 +58,9 @@ class TasksWriter:
         if not os.path.exists(docspath):
             os.makedirs(docspath)
 
-        mdFile = MdUtils(file_name=docspath+"/"+filename.replace('.yml',''),title=filename.replace('.yml',''))
+        mdFile = MdUtils(file_name=docspath+"/"+filename.replace('.yml',''),title='Tasks: '+filename.replace('.yml',''))
         mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Tasks') 
-        mdFile.new_line("---")
+        mdFile.new_header(level=1, title=filename) 
         self.addTasks(dirpath+"/"+filename, mdFile)
 
         mdFile.new_table_of_contents(table_title='Contents', depth=2)
@@ -92,12 +91,11 @@ class TasksWriter:
         if not os.path.exists(comboFileDirectory):
             os.makedirs(comboFileDirectory)
 
-        mdFile = MdUtils(file_name=comboFilenameAbs,title=comboFilename[comboFilename.rfind('/')+1:])
+        mdFile = MdUtils(file_name=comboFilenameAbs,title='Tasks: '+comboFilename[comboFilename.rfind('/')+1:])
         mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Tasks') 
         for filename in filenamesToCombine:
             mdFile.new_line("")
-            mdFile.new_header(level=2, title=filename['name']) 
+            mdFile.new_header(level=1, title=filename['name']) 
 
             self.addTasks(self.tasks_dir+"/"+filename['name'], mdFile)
 
