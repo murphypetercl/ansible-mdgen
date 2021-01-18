@@ -56,7 +56,7 @@ class Writer:
     def createIndexMDFile(self):
 
         self.log.info("(createIndexMDFile) Create Index MD File")
-        page_title = self.config.get_base_dir()[self.config.get_base_dir().rfind('/')+1:]
+        page_title = "Role: "+self.config.get_base_dir()[self.config.get_base_dir().rfind('/')+1:]
         author = ''
         description = ''
         company = ''
@@ -92,7 +92,7 @@ class Writer:
         mdFile.new_line("---")
         mdFile.new_header(level=1, title='Dependencies', style='setext') 
 
-        if dependencies != None:
+        if dependencies != []:
             dependency_table_entries = ["Dependencies"]
 
             for dependency in dependencies:

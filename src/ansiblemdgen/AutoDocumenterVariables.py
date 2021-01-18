@@ -70,12 +70,16 @@ class VariablesWriter:
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace('.yml',''),title=filename)
+        title_prefix = output_directory[output_directory.rfind('/')+1:].title()
+
+        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace('.yml',''),title=title_prefix+': '+filename.replace('.yml',''))
         mdFile.new_line("---")
         mdFile.new_header(level=1, title='Variables') 
         mdFile.new_line("---")
 
         mdFile.new_header(level=2, title=filename) 
+
+        mdFile.new_line("---")
 
         self.addVariables(dirpath+"/"+filename, mdFile)
 
@@ -95,8 +99,7 @@ class VariablesWriter:
 
                 if variables != None:
                     for variable in variables:
-                        
-                        mdFile.new_line("---")
+
                         mdFile.new_header(level=3, title=variable)
                         
                         if(variable in self._all_descriptions):
