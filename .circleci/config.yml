@@ -25,6 +25,17 @@ jobs:
   deploy:
     executor: python/default
     steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - python/install-packages:
+          pip-dependency-file: requirements.txt
+          pkg-manager: pip
+      - python/install-packages:
+          args: pytest twine
+          pkg-manager: pip
+          pypi-cache: false
+      - run: pip install -e .
       - run:
           name: Init .pypirc
           command: |
