@@ -72,18 +72,14 @@ class VariablesWriter:
 
         title_prefix = output_directory[output_directory.rfind('/')+1:].title()
 
-        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace('.yml',''),title=title_prefix+': '+filename.replace('.yml',''))
-        mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Variables') 
-        mdFile.new_line("---")
+        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace('.yml',''))
 
-        mdFile.new_header(level=2, title=filename) 
+        mdFile.new_header(level=1, title=filename) 
 
         mdFile.new_line("---")
 
         self.addVariables(dirpath+"/"+filename, mdFile)
 
-        mdFile.new_table_of_contents(table_title='Contents', depth=3)
         mdFile.create_md_file()
         self.log.info("(createMDFile) Create MD File Complete")
 
@@ -100,7 +96,7 @@ class VariablesWriter:
                 if variables != None:
                     for variable in variables:
 
-                        mdFile.new_header(level=3, title=variable)
+                        mdFile.new_header(level=2, title=variable)
                         
                         if(variable in self._all_descriptions):
                             mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[variable][0]["value"],  default_flow_style=False))
@@ -156,16 +152,15 @@ class VariablesWriter:
         if not os.path.exists(comboFileDirectory):
             os.makedirs(comboFileDirectory)
 
-        mdFile = MdUtils(file_name=comboFilenameAbs,title=comboFilename[comboFilename.rfind('/')+1:])
-        mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Variables') 
+        mdFile = MdUtils(file_name=comboFilenameAbs)
+
+        mdFile.new_header(level=1, title=comboFilename[comboFilename.rfind('/')+1:]) 
         for filename in filenamesToCombine:
             mdFile.new_line("")
             mdFile.new_header(level=2, title=filename['name']) 
 
             self.addVariables(directory+"/"+filename['name'], mdFile)
 
-        mdFile.new_table_of_contents(table_title='Contents', depth=3)
         mdFile.create_md_file()
 
 class AnnotationItem:
