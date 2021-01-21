@@ -12,16 +12,9 @@ from ansiblemdgen.AutoDocumenterIndex import IndexWriter
 from ansiblemdgen.AutoDocumenterTasks import TasksWriter
 from ansiblemdgen.AutoDocumenterVariables import VariablesWriter
 
-class Writer:
+from ansiblemdgen.AutoDocumenterBase import WriterBase
 
-    config = None
-    tasks_dir = None
-
-    def __init__(self):
-        self.config = SingleConfig()
-        self.log = SingleLog()
-
-        self.log.info("Base directory: "+self.config.get_base_dir())
+class Writer(WriterBase):
 
     def render(self):
 
@@ -37,7 +30,7 @@ class Writer:
             if overwrite_results != "yes":
                 sys.exit()
 
-        self.makeDocsDir()
+        self.makeDocsDir(self.config.get_output_dir())
 
         indexWriter = IndexWriter()
         indexWriter.render()
@@ -47,9 +40,3 @@ class Writer:
 
         variablesWriter = VariablesWriter()
         variablesWriter.render()
-
-    def makeDocsDir(self):
-        output_directory = self.config.get_output_dir()
-        self.log.debug("(makeDocsDir) Output Directory: "+output_directory)
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)

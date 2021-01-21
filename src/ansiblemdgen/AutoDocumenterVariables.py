@@ -9,17 +9,16 @@ from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
 import re
 
-class VariablesWriter:
+from ansiblemdgen.AutoDocumenterBase import WriterBase
 
-    config = None
+class VariablesWriter(WriterBase):
+
     defaults_dir = None
     vars_dir = None
 
     _all_descriptions = {}
 
-    def __init__(self):
-        self.config = SingleConfig()
-        self.log = SingleLog()
+    def render(self):
 
         self.defaults_dir = self.config.get_base_dir()+"/defaults"
         self.log.info("Defaults directory: "+self.defaults_dir)
@@ -27,44 +26,22 @@ class VariablesWriter:
         self.vars_dir = self.config.get_base_dir()+"/vars"
         self.log.info("Vars directory: "+self.vars_dir)
 
-    def render(self):
-
-        self.makeDocsDefaultsDir()
+        self.makeDocsDir(self.config.get_output_defaults_dir())
 
         if (self.config.defaults != None and self.config.defaults['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.defaults_dir, self.config.get_output_defaults_dir(), self.config.defaults['combinations'])
+            self.iterateOnCombinations(self.defaults_dir, self.config.defaults['combinations'], self.config.get_output_defaults_dir())
         else:
             self.iterateOnFilesAndDirectories(self.defaults_dir, self.config.get_output_defaults_dir())
 
-        self.makeDocsVariablesDir()
+        self.makeDocsDir(self.config.get_output_variables_dir())
 
         if (self.config.variables != None and self.config.variables['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.vars_dir, self.config.get_output_variables_dir(), self.config.variables['combinations'])
+            self.iterateOnCombinations(self.vars_dir, self.config.variables['combinations'], self.config.get_output_variables_dir())
         else:
             self.iterateOnFilesAndDirectories(self.vars_dir, self.config.get_output_variables_dir())
 
-    def makeDocsDefaultsDir(self):
-        output_defaults_directory = self.config.get_output_defaults_dir()
-        self.log.debug("(makeDocsDefaultsDir) Output Directory: "+output_defaults_directory)
-        if not os.path.exists(output_defaults_directory):
-            os.makedirs(output_defaults_directory)
 
-    def makeDocsVariablesDir(self):
-        output_variables_directory = self.config.get_output_variables_dir()
-        self.log.debug("(makeDocsVariablesDir) Output Directory: "+output_variables_directory)
-        if not os.path.exists(output_variables_directory):
-            os.makedirs(output_variables_directory)
-
-    def iterateOnFilesAndDirectories(self, directory, output_directory):
-        for (dirpath, dirnames, filenames) in walk(directory):
-            for filename in filenames:
-                if filename.endswith('.yml'):
-                    self.createMDFile(dirpath, output_directory, filename)
-
-            for dirname in dirnames:
-                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname, output_directory+"/"+dirname)
-
-    def createMDFile(self, dirpath, output_directory, filename):
+    def createMDFile(self, dirpath, filename, output_directory):
 
         self.log.info("(createMDFile) Create MD File")
         if not os.path.exists(output_directory):
@@ -139,10 +116,6 @@ class VariablesWriter:
                     self._all_descriptions[item.key] = []
 
                 self._all_descriptions[item.key].append(item.get_obj())
-
-    def iterateOnCombinations(self, rolepath, directory, output_directory, combinations):
-        for combination in combinations:
-            self.createMDCombinationFile(combination['filename'], directory, output_directory, combination['files_to_combine'])
 
     def createMDCombinationFile(self, comboFilename, directory, output_directory, filenamesToCombine):
 

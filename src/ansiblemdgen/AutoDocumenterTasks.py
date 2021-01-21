@@ -8,15 +8,14 @@ from os import walk
 from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
 
-class TasksWriter:
+from ansiblemdgen.AutoDocumenterBase import WriterBase
 
-    config = None
+class TasksWriter(WriterBase):
+
     tasks_dir = None
     handlers_dir = None
 
-    def __init__(self):
-        self.config = SingleConfig()
-        self.log = SingleLog()
+    def render(self):
 
         self.tasks_dir = self.config.get_base_dir()+"/tasks"
         self.log.info("Tasks directory: "+self.tasks_dir)
@@ -24,50 +23,27 @@ class TasksWriter:
         self.handlers_dir = self.config.get_base_dir()+"/handlers"
         self.log.info("Tasks directory: "+self.handlers_dir)
 
-    def render(self):
-
-        self.makeDocsTasksDir()
+        self.makeDocsDir(self.config.get_output_handlers_dir())
 
         if (self.config.tasks != None and self.config.tasks['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.config.tasks['combinations'], self.config.get_output_tasks_dir())
+            self.iterateOnCombinations(self.tasks_dir, self.config.tasks['combinations'], self.config.get_output_tasks_dir())
         else:
             self.iterateOnFilesAndDirectories(self.tasks_dir, self.config.get_output_tasks_dir())
 
-        self.makeDocsHandlersDir()
+        self.makeDocsDir(self.config.get_output_handlers_dir())
 
         if (self.config.handlers != None and self.config.handlers['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.config.handlers['combinations'], self.config.get_output_handlers_dir())
+            self.iterateOnCombinations(self.handlers_dir, self.config.handlers['combinations'], self.config.get_output_handlers_dir())
         else:
             self.iterateOnFilesAndDirectories(self.handlers_dir,self.config.get_output_handlers_dir())
 
-
-    def makeDocsTasksDir(self):
-        output_tasks_directory = self.config.get_output_tasks_dir()
-        self.log.debug("(makeDocsTasksDir) Output Directory: "+output_tasks_directory)
-        if not os.path.exists(output_tasks_directory):
-            os.makedirs(output_tasks_directory)
-    
-    def makeDocsHandlersDir(self):
-        output_handlers_directory = self.config.get_output_handlers_dir()
-        self.log.debug("(makeDocsTasksDir) Output Directory: "+output_handlers_directory)
-        if not os.path.exists(output_handlers_directory):
-            os.makedirs(output_handlers_directory)
-
-    def iterateOnFilesAndDirectories(self, tasks_dir, output_directory):
-        for (dirpath, dirnames, filenames) in walk(tasks_dir):
-
-            for filename in filenames:
-                if filename.endswith('.yml'):
-                    self.createMDFile(dirpath, filename, output_directory)
-
-            for dirname in dirnames:
-                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname, output_directory)
 
     def createMDFile(self, dirpath, filename, output_directory):
 
         self.log.info("(createMDFile) Create MD File")
         self.log.debug("(createMDFile) dirpath: "+dirpath)
         self.log.debug("(createMDFile) filename: "+filename)
+        self.log.debug("(createMDFile) output_directory: "+output_directory)
         
         if output_directory == self.config.get_output_tasks_dir():
             docspath = dirpath.replace(self.tasks_dir,output_directory)
@@ -97,11 +73,12 @@ class TasksWriter:
             except yaml.YAMLError as exc:
                 print(exc)
 
-    def iterateOnCombinations(self, rolepath, combinations, output_directory):
-        for combination in combinations:
-            self.createMDCombinationFile(combination['filename'], combination['files_to_combine'], output_directory)
+    def createMDCombinationFile(self, comboFilename, directory, output_directory, filenamesToCombine):
 
-    def createMDCombinationFile(self, comboFilename, filenamesToCombine, output_directory):
+        self.log.info("(createMDCombinationFile) Create MD Combination File")
+        self.log.debug("(createMDCombinationFile) comboFilename: "+comboFilename)
+        self.log.debug("(createMDCombinationFile) directory: "+directory)
+        self.log.debug("(createMDCombinationFile) output_directory: "+output_directory)
 
         comboFilenameAbs = output_directory+"/"+comboFilename      
         comboFileDirectory = comboFilenameAbs[0:int(comboFilenameAbs.rfind('/'))]
@@ -117,6 +94,6 @@ class TasksWriter:
             mdFile.new_line("")
             mdFile.new_header(level=2, title=filename['name']) 
 
-            self.addTasks(self.tasks_dir+"/"+filename['name'], mdFile)
+            self.addTasks(directory+"/"+filename['name'], mdFile)
 
         mdFile.create_md_file()
