@@ -12,7 +12,6 @@ class TasksWriter:
 
     config = None
     tasks_dir = None
-    handlers_dir = None
 
     def __init__(self):
         self.config = SingleConfig()
@@ -21,24 +20,14 @@ class TasksWriter:
         self.tasks_dir = self.config.get_base_dir()+"/tasks"
         self.log.info("Tasks directory: "+self.tasks_dir)
 
-        self.handlers_dir = self.config.get_base_dir()+"/handlers"
-        self.log.info("Tasks directory: "+self.handlers_dir)
-
     def render(self):
 
         self.makeDocsTasksDir()
 
         if (self.config.tasks != None and self.config.tasks['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.config.tasks['combinations'], self.config.get_output_tasks_dir())
+            self.iterateOnCombinations(self.config.get_base_dir(), self.config.tasks['combinations'])
         else:
-            self.iterateOnFilesAndDirectories(self.tasks_dir, self.config.get_output_tasks_dir())
-
-        self.makeDocsHandlersDir()
-
-        if (self.config.handlers != None and self.config.handlers['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.config.handlers['combinations'], self.config.get_output_handlers_dir())
-        else:
-            self.iterateOnFilesAndDirectories(self.handlers_dir,self.config.get_output_handlers_dir())
+            self.iterateOnFilesAndDirectories(self.tasks_dir)
 
 
     def makeDocsTasksDir(self):
@@ -46,33 +35,24 @@ class TasksWriter:
         self.log.debug("(makeDocsTasksDir) Output Directory: "+output_tasks_directory)
         if not os.path.exists(output_tasks_directory):
             os.makedirs(output_tasks_directory)
-    
-    def makeDocsHandlersDir(self):
-        output_handlers_directory = self.config.get_output_handlers_dir()
-        self.log.debug("(makeDocsTasksDir) Output Directory: "+output_handlers_directory)
-        if not os.path.exists(output_handlers_directory):
-            os.makedirs(output_handlers_directory)
 
-    def iterateOnFilesAndDirectories(self, tasks_dir, output_directory):
+    def iterateOnFilesAndDirectories(self, tasks_dir):
         for (dirpath, dirnames, filenames) in walk(tasks_dir):
 
             for filename in filenames:
                 if filename.endswith('.yml'):
-                    self.createMDFile(dirpath, filename, output_directory)
+                    self.createMDFile(dirpath, filename)
 
             for dirname in dirnames:
-                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname, output_directory)
+                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname)
 
-    def createMDFile(self, dirpath, filename, output_directory):
+    def createMDFile(self, dirpath, filename):
 
         self.log.info("(createMDFile) Create MD File")
         self.log.debug("(createMDFile) dirpath: "+dirpath)
         self.log.debug("(createMDFile) filename: "+filename)
         
-        if output_directory == self.config.get_output_tasks_dir():
-            docspath = dirpath.replace(self.tasks_dir,output_directory)
-        else:
-            docspath = dirpath.replace(self.handlers_dir,output_directory)
+        docspath = dirpath.replace(self.tasks_dir,self.config.get_output_tasks_dir())
         self.log.debug("(createMDFile) docspath: "+docspath)
 
         if not os.path.exists(docspath):
@@ -97,13 +77,13 @@ class TasksWriter:
             except yaml.YAMLError as exc:
                 print(exc)
 
-    def iterateOnCombinations(self, rolepath, combinations, output_directory):
+    def iterateOnCombinations(self, rolepath, combinations):
         for combination in combinations:
-            self.createMDCombinationFile(combination['filename'], combination['files_to_combine'], output_directory)
+            self.createMDCombinationFile(combination['filename'], combination['files_to_combine'])
 
-    def createMDCombinationFile(self, comboFilename, filenamesToCombine, output_directory):
+    def createMDCombinationFile(self, comboFilename, filenamesToCombine):
 
-        comboFilenameAbs = output_directory+"/"+comboFilename      
+        comboFilenameAbs = self.config.get_output_tasks_dir()+"/"+comboFilename      
         comboFileDirectory = comboFilenameAbs[0:int(comboFilenameAbs.rfind('/'))]
 
         if not os.path.exists(comboFileDirectory):
