@@ -58,12 +58,10 @@ class TasksWriter:
         if not os.path.exists(docspath):
             os.makedirs(docspath)
 
-        mdFile = MdUtils(file_name=docspath+"/"+filename.replace('.yml',''),title='Tasks: '+filename.replace('.yml',''))
-        mdFile.new_line("---")
+        mdFile = MdUtils(file_name=docspath+"/"+filename.replace('.yml',''))
         mdFile.new_header(level=1, title=filename) 
         self.addTasks(dirpath+"/"+filename, mdFile)
 
-        mdFile.new_table_of_contents(table_title='Contents', depth=2)
         mdFile.create_md_file()
         self.log.info("(createMDFile) Create MD File Complete")
 
@@ -91,13 +89,14 @@ class TasksWriter:
         if not os.path.exists(comboFileDirectory):
             os.makedirs(comboFileDirectory)
 
-        mdFile = MdUtils(file_name=comboFilenameAbs,title='Tasks: '+comboFilename[comboFilename.rfind('/')+1:])
+        mdFile = MdUtils(file_name=comboFilenameAbs)
+
+        mdFile.new_header(level=1, title='Tasks: '+comboFilename[comboFilename.rfind('/')+1:])
         mdFile.new_line("---")
         for filename in filenamesToCombine:
             mdFile.new_line("")
-            mdFile.new_header(level=1, title=filename['name']) 
+            mdFile.new_header(level=2, title=filename['name']) 
 
             self.addTasks(self.tasks_dir+"/"+filename['name'], mdFile)
 
-        mdFile.new_table_of_contents(table_title='Contents', depth=2)
         mdFile.create_md_file()

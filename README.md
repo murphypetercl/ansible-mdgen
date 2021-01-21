@@ -6,7 +6,7 @@ Generate documentation for ansible roles
 
 ## Description
 
-This package reads all task files and creates equivalent .md files in the docs directory of the role. It also allows you to configure it so that you can combine tasks into a single .md file.
+This package reads all task and variables files and creates equivalent .md files in the docs directory of the role. It also allows you to configure it so that you can combine tasks into a single .md file.
 
 If docs directory does not exist then it will be created. 
 
@@ -69,7 +69,7 @@ To provide and output default variable descriptions add a comment with the var a
 ```
 # @var: <variable_name>: <variable_description>
 ```
-Note: currently only available for defaults variable files... vars directory to follow...
+Note: currently only available for defaults and vars directory files...
 
 ## To debug
 
@@ -77,4 +77,4 @@ Pass the options -vvv for debugging
 
 ## Credits
 
-The idea for this project is based on (and includes some code from) [ansible-autodoc](https://github.com/AndresBott/ansible-autodoc) by Andres Bott so credit goes to him for his work.
+The idea for this project is based on (and includes some code from) [ansible-autodoc](https://github.com/AndresBott/ansible-autodoc) by Andres Bott so credit to him for his work.

@@ -8,6 +8,7 @@ import shutil
 from os import walk
 from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
+from ansiblemdgen.AutoDocumenterIndex import IndexWriter
 from ansiblemdgen.AutoDocumenterTasks import TasksWriter
 from ansiblemdgen.AutoDocumenterVariables import VariablesWriter
 
@@ -38,7 +39,8 @@ class Writer:
 
         self.makeDocsDir()
 
-        self.createIndexMDFile()
+        indexWriter = IndexWriter()
+        indexWriter.render()
 
         tasksWriter = TasksWriter()
         tasksWriter.render()
@@ -46,74 +48,8 @@ class Writer:
         variablesWriter = VariablesWriter()
         variablesWriter.render()
 
-
     def makeDocsDir(self):
         output_directory = self.config.get_output_dir()
         self.log.debug("(makeDocsDir) Output Directory: "+output_directory)
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
-    
-    def createIndexMDFile(self):
-
-        self.log.info("(createIndexMDFile) Create Index MD File")
-        page_title = "Role: "+self.config.get_base_dir()[self.config.get_base_dir().rfind('/')+1:]
-        author = ''
-        description = ''
-        company = ''
-        license = ''
-        min_ansible_version = ''
-        dependencies = []
-
-        galaxy_metafile = self.config.get_base_dir()+'/meta/main.yml'
-
-        if os.path.isfile(galaxy_metafile):
-            with open(galaxy_metafile, 'r') as stream:
-                try:
-                    metadata = yaml.safe_load(stream)
-                    author = metadata.get("galaxy_info").get('author')
-                    description = metadata.get("galaxy_info").get('description')
-                    company = metadata.get("galaxy_info").get('company')
-                    license = metadata.get("galaxy_info").get('license')
-                    min_ansible_version = metadata.get("galaxy_info").get('min_ansible_version')
-                    dependencies = metadata.get('dependencies')
-
-                except yaml.YAMLError as exc:
-                    print(exc)
-        else:
-            self.log.info("(createIndexMDFile) No meta/main.yml file")
-
-        mdFile = MdUtils(file_name=self.config.get_output_dir()+"/index.md",title=page_title)
-
-        mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Description', style='setext') 
-        mdFile.new_line(description)
-        mdFile.new_line()
-
-        mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Dependencies', style='setext') 
-
-        if dependencies != []:
-            dependency_table_entries = ["Dependencies"]
-
-            for dependency in dependencies:
-                dependency_table_entries.extend([yaml.dump(dependency,  default_flow_style=False)])
-                for dep_part in dependency:
-                    mdFile.new_line("> "+dep_part+": "+dependency[dep_part])
-                mdFile.new_line()
-        else:
-            mdFile.new_line('None')
-        mdFile.new_line()
-
-        mdFile.new_line("---")
-        mdFile.new_header(level=1, title='Information', style='setext') 
-
-        table_entries = ["Author", "Company", "License","Minimum Ansible Version"]
-        table_entries.extend([author, company, license, str(min_ansible_version)])
-        mdFile.new_line()
-
-        mdFile.new_table(columns=4, rows=2, text=table_entries, text_align='center')
-
-        mdFile.new_table_of_contents(table_title='Contents', depth=2)
-
-        mdFile.create_md_file()
-        self.log.info("(createIndexMDFile) Create Index MD File Complete")
