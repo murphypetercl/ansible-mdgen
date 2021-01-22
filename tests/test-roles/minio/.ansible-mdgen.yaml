@@ -16,3 +16,10 @@ tasks:
       files_to_combine:
         - name: minio/minio.yml
         - name: minio/firewall.yml
+
+variables:
+  combinations:
+    - filename: main
+      files_to_combine:
+        - name: main.yml
+        - name: myvars/myvars.yml

@@ -8,51 +8,49 @@ from os import walk
 from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
 
-class TasksWriter:
+from ansiblemdgen.AutoDocumenterBase import WriterBase
 
-    config = None
+class TasksWriter(WriterBase):
+
     tasks_dir = None
+    handlers_dir = None
 
-    def __init__(self):
-        self.config = SingleConfig()
-        self.log = SingleLog()
+    def render(self):
 
         self.tasks_dir = self.config.get_base_dir()+"/tasks"
         self.log.info("Tasks directory: "+self.tasks_dir)
 
-    def render(self):
+        self.handlers_dir = self.config.get_base_dir()+"/handlers"
+        self.log.info("Tasks directory: "+self.handlers_dir)
 
-        self.makeDocsTasksDir()
+        self.makeDocsDir(self.config.get_output_tasks_dir())
+
+        self.createMDFlowFile(self.tasks_dir, self.config.get_output_tasks_dir())
 
         if (self.config.tasks != None and self.config.tasks['combinations'] != None):
-            self.iterateOnCombinations(self.config.get_base_dir(), self.config.tasks['combinations'])
+            self.iterateOnCombinations(self.tasks_dir, self.config.tasks['combinations'], self.config.get_output_tasks_dir())
         else:
-            self.iterateOnFilesAndDirectories(self.tasks_dir)
+            self.iterateOnFilesAndDirectories(self.tasks_dir, self.config.get_output_tasks_dir())
+
+        self.makeDocsDir(self.config.get_output_handlers_dir())
+
+        if (self.config.handlers != None and self.config.handlers['combinations'] != None):
+            self.iterateOnCombinations(self.handlers_dir, self.config.handlers['combinations'], self.config.get_output_handlers_dir())
+        else:
+            self.iterateOnFilesAndDirectories(self.handlers_dir,self.config.get_output_handlers_dir())
 
 
-    def makeDocsTasksDir(self):
-        output_tasks_directory = self.config.get_output_tasks_dir()
-        self.log.debug("(makeDocsTasksDir) Output Directory: "+output_tasks_directory)
-        if not os.path.exists(output_tasks_directory):
-            os.makedirs(output_tasks_directory)
-
-    def iterateOnFilesAndDirectories(self, tasks_dir):
-        for (dirpath, dirnames, filenames) in walk(tasks_dir):
-
-            for filename in filenames:
-                if filename.endswith('.yml'):
-                    self.createMDFile(dirpath, filename)
-
-            for dirname in dirnames:
-                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname)
-
-    def createMDFile(self, dirpath, filename):
+    def createMDFile(self, dirpath, filename, output_directory):
 
         self.log.info("(createMDFile) Create MD File")
         self.log.debug("(createMDFile) dirpath: "+dirpath)
         self.log.debug("(createMDFile) filename: "+filename)
+        self.log.debug("(createMDFile) output_directory: "+output_directory)
         
-        docspath = dirpath.replace(self.tasks_dir,self.config.get_output_tasks_dir())
+        if output_directory == self.config.get_output_tasks_dir():
+            docspath = dirpath.replace(self.tasks_dir,output_directory)
+        else:
+            docspath = dirpath.replace(self.handlers_dir,output_directory)
         self.log.debug("(createMDFile) docspath: "+docspath)
 
         if not os.path.exists(docspath):
@@ -77,13 +75,14 @@ class TasksWriter:
             except yaml.YAMLError as exc:
                 print(exc)
 
-    def iterateOnCombinations(self, rolepath, combinations):
-        for combination in combinations:
-            self.createMDCombinationFile(combination['filename'], combination['files_to_combine'])
+    def createMDCombinationFile(self, comboFilename, directory, output_directory, filenamesToCombine):
 
-    def createMDCombinationFile(self, comboFilename, filenamesToCombine):
+        self.log.info("(createMDCombinationFile) Create MD Combination File")
+        self.log.debug("(createMDCombinationFile) comboFilename: "+comboFilename)
+        self.log.debug("(createMDCombinationFile) directory: "+directory)
+        self.log.debug("(createMDCombinationFile) output_directory: "+output_directory)
 
-        comboFilenameAbs = self.config.get_output_tasks_dir()+"/"+comboFilename      
+        comboFilenameAbs = output_directory+"/"+comboFilename      
         comboFileDirectory = comboFilenameAbs[0:int(comboFilenameAbs.rfind('/'))]
 
         if not os.path.exists(comboFileDirectory):
@@ -97,6 +96,49 @@ class TasksWriter:
             mdFile.new_line("")
             mdFile.new_header(level=2, title=filename['name']) 
 
-            self.addTasks(self.tasks_dir+"/"+filename['name'], mdFile)
+            self.addTasks(directory+"/"+filename['name'], mdFile)
 
         mdFile.create_md_file()
+    
+    def createMDFlowFile(self, directory, output_directory):
+
+        mdFile = MdUtils(file_name=output_directory+"/flow")
+        mdFile.new_header(level=1, title='Flow') 
+
+        flow = self.getFlowData(directory)
+
+        mdFile.new_line("```mermaid")
+        mdFile.new_line("graph LR")
+
+        for connection in flow:
+            if flow[connection] != []:
+                for connectTo in flow[connection]:
+                    to = connectTo['include']
+                    mdFile.new_line(connection+"("+connection+") --> "+to+"("+to+")")
+
+        mdFile.new_line("```")
+
+        mdFile.create_md_file()
+
+    def getFlowData(self, directory):
+        flow = {}
+
+        for (dirpath, dirnames, filenames) in walk(directory):
+            for filename in filenames:
+                if filename.endswith('.yml'):
+                    with open(dirpath+"/"+filename, 'r') as stream:
+                        try:
+                            tasks = yaml.safe_load(stream)
+                            if tasks != None:
+                                for task in tasks:
+                                    try:
+                                        if filename not in flow.keys():
+                                            flow[filename] = []
+                                        flow[filename].append({"include": task["include_tasks"]})
+                                    except Exception:
+                                        pass
+                        except yaml.YAMLError as exc:
+                            print(exc)
+
+            
+        return flow

@@ -25,6 +25,7 @@ clear_output = True
     # path to the documentation output dir
     output_dir = "./docs"
     output_tasks_dir = "tasks"
+    output_handlers_dir = "handlers"
     output_defaults_dir = "defaults"
     output_variables_dir = "variables"
 
@@ -44,6 +45,7 @@ clear_output = True
     _config_file_dir = ""
 
     tasks = None
+    handlers = None
     defaults = None
     variables = None
 
@@ -90,6 +92,18 @@ clear_output = True
         elif not os.path.isabs(self.output_tasks_dir):
             return os.path.realpath(self.get_output_dir()+"/"+self.output_tasks_dir)
 
+    def get_output_handlers_dir(self):
+        """
+        get the relative path to cwd of the output directory for the documentation
+        :return: str path
+        """
+        if self.output_handlers_dir == "":
+            return os.path.realpath(self.get_output_dir())
+        elif os.path.isabs(self.output_handlers_dir):
+            return os.path.realpath(self.output_handlers_dir)
+        elif not os.path.isabs(self.output_handlers_dir):
+            return os.path.realpath(self.get_output_dir()+"/"+self.output_handlers_dir)
+
     def get_output_defaults_dir(self):
         """
         get the relative path to cwd of the output directory for the documentation
@@ -120,6 +134,7 @@ clear_output = True
             "base_dir",
             "output_dir",
             "tasks",
+            "handlers",
             "defaults",
             "variables",
             "debug_level",
