@@ -14,6 +14,7 @@ class TasksWriter(WriterBase):
 
     tasks_dir = None
     handlers_dir = None
+    flow = {}
 
     def render(self):
 
@@ -105,14 +106,14 @@ class TasksWriter(WriterBase):
         mdFile = MdUtils(file_name=output_directory+"/flow")
         mdFile.new_header(level=1, title='Flow') 
 
-        flow = self.getFlowData(directory)
+        self.getFlowData(directory)
 
         mdFile.new_line("```mermaid")
         mdFile.new_line("graph LR")
 
-        for connection in flow:
-            if flow[connection] != []:
-                for connectTo in flow[connection]:
+        for connection in self.flow:
+            if self.flow[connection] != []:
+                for connectTo in self.flow[connection]:
                     to = connectTo['include']
                     mdFile.new_line(connection+"("+connection+") --> "+to+"("+to+")")
 
@@ -121,24 +122,31 @@ class TasksWriter(WriterBase):
         mdFile.create_md_file()
 
     def getFlowData(self, directory):
-        flow = {}
+        self.getFlowDataForFile(directory, 'main.yml')
+        self.getOrphanedFlowData(directory)
 
+    def getFlowDataForFile(self, directory, filename):
+        with open(directory+"/"+filename, 'r') as stream:
+            try:
+                tasks = yaml.safe_load(stream)
+                if tasks != None:
+                    for task in tasks:
+                        try:
+                            relativeFilename = filename
+                            # ignore includes that are variables
+                            if task["include_tasks"].startswith('{{') is False:
+                                if relativeFilename not in self.flow.keys():
+                                    self.flow[relativeFilename] = []
+                                self.flow[relativeFilename].append({"include": task["include_tasks"]})
+                                self.getFlowDataForFile(directory, task["include_tasks"])
+                        except Exception:
+                            pass
+            except yaml.YAMLError as exc:
+                print(exc)
+
+    def getOrphanedFlowData(self, directory):
         for (dirpath, dirnames, filenames) in walk(directory):
             for filename in filenames:
-                if filename.endswith('.yml'):
-                    with open(dirpath+"/"+filename, 'r') as stream:
-                        try:
-                            tasks = yaml.safe_load(stream)
-                            if tasks != None:
-                                for task in tasks:
-                                    try:
-                                        if filename not in flow.keys():
-                                            flow[filename] = []
-                                        flow[filename].append({"include": task["include_tasks"]})
-                                    except Exception:
-                                        pass
-                        except yaml.YAMLError as exc:
-                            print(exc)
-
-            
-        return flow
+                relativeFilename = (os.path.relpath(dirpath, directory)+"/"+filename).replace("./","")
+                if relativeFilename not in self.flow.keys():
+                    self.getFlowDataForFile(directory, relativeFilename)
