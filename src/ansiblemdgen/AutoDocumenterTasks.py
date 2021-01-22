@@ -23,7 +23,9 @@ class TasksWriter(WriterBase):
         self.handlers_dir = self.config.get_base_dir()+"/handlers"
         self.log.info("Tasks directory: "+self.handlers_dir)
 
-        self.makeDocsDir(self.config.get_output_handlers_dir())
+        self.makeDocsDir(self.config.get_output_tasks_dir())
+
+        self.createMDFlowFile(self.tasks_dir, self.config.get_output_tasks_dir())
 
         if (self.config.tasks != None and self.config.tasks['combinations'] != None):
             self.iterateOnCombinations(self.tasks_dir, self.config.tasks['combinations'], self.config.get_output_tasks_dir())
@@ -97,3 +99,46 @@ class TasksWriter(WriterBase):
             self.addTasks(directory+"/"+filename['name'], mdFile)
 
         mdFile.create_md_file()
+    
+    def createMDFlowFile(self, directory, output_directory):
+
+        mdFile = MdUtils(file_name=output_directory+"/flow")
+        mdFile.new_header(level=1, title='Flow') 
+
+        flow = self.getFlowData(directory)
+
+        mdFile.new_line("```mermaid")
+        mdFile.new_line("graph LR")
+
+        for connection in flow:
+            if flow[connection] != []:
+                for connectTo in flow[connection]:
+                    to = connectTo['include']
+                    mdFile.new_line(connection+"("+connection+") --> "+to+"("+to+")")
+
+        mdFile.new_line("```")
+
+        mdFile.create_md_file()
+
+    def getFlowData(self, directory):
+        flow = {}
+
+        for (dirpath, dirnames, filenames) in walk(directory):
+            for filename in filenames:
+                if filename.endswith('.yml'):
+                    with open(dirpath+"/"+filename, 'r') as stream:
+                        try:
+                            tasks = yaml.safe_load(stream)
+                            if tasks != None:
+                                for task in tasks:
+                                    try:
+                                        if filename not in flow.keys():
+                                            flow[filename] = []
+                                        flow[filename].append({"include": task["include_tasks"]})
+                                    except Exception:
+                                        pass
+                        except yaml.YAMLError as exc:
+                            print(exc)
+
+            
+        return flow
