@@ -72,7 +72,27 @@ class TasksWriter(WriterBase):
                 tasks = yaml.safe_load(stream)
                 if tasks != None:
                     for task in tasks:
-                        mdFile.new_paragraph('* '+task["name"])
+                        try:
+                            if 'block' in task.keys():
+                                if 'name' in task.keys():
+                                    mdFile.new_paragraph('* Block: '+task["name"])
+                                else:
+                                    mdFile.new_paragraph('* Block: ')
+
+                                for btask in task["block"]:
+                                    if 'name' in btask.keys():
+                                        mdFile.new_paragraph('    * '+btask["name"])
+                            elif 'name' in task.keys():
+                                mdFile.new_paragraph('* '+task["name"])
+                            else:
+                                mdFile.new_paragraph('* No description available for this task - here is the definition:')
+                                mdFile.new_line("```")
+                                mdFile.new_paragraph(yaml.safe_dump(task,  default_flow_style=False))
+                                mdFile.new_line("```")
+                        except Exception:
+                            print(task)
+                            pass
+
             except yaml.YAMLError as exc:
                 print(exc)
 
@@ -131,13 +151,22 @@ class TasksWriter(WriterBase):
                 tasks = yaml.safe_load(stream)
                 if tasks != None:
                     for task in tasks:
+                        if 'block' in task.keys():
+                            for btask in task["block"]:
+                                try:
+                                    if btask["include_tasks"].startswith('{{') is False:
+                                        if filename not in self.flow.keys():
+                                            self.flow[filename] = []
+                                        self.flow[filename].append({"include": btask["include_tasks"]})
+                                        self.getFlowDataForFile(directory, btask["include_tasks"])
+                                except Exception:
+                                    pass
                         try:
-                            relativeFilename = filename
                             # ignore includes that are variables
                             if task["include_tasks"].startswith('{{') is False:
-                                if relativeFilename not in self.flow.keys():
-                                    self.flow[relativeFilename] = []
-                                self.flow[relativeFilename].append({"include": task["include_tasks"]})
+                                if filename not in self.flow.keys():
+                                    self.flow[filename] = []
+                                self.flow[filename].append({"include": task["include_tasks"]})
                                 self.getFlowDataForFile(directory, task["include_tasks"])
                         except Exception:
                             pass
