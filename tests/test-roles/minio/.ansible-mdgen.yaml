@@ -23,3 +23,10 @@ variables:
       files_to_combine:
         - name: main.yml
         - name: myvars/myvars.yml
+
+appendix:
+  references:
+    - description: Distributed Minio QuickStart Guide
+      link: https://docs.min.io/docs/distributed-minio-quickstart-guide.html
+    - description: Peter Murphy
+      link: https://www.linkedin.com/in/peter-murphy-61493974/

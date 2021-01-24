@@ -44,10 +44,14 @@ clear_output = True
     # if config file is not in root of project, this is used to make output relative to config file
     _config_file_dir = ""
 
+
+
     tasks = None
     handlers = None
     defaults = None
     variables = None
+
+    appendix = None
 
     # default debug level
     debug_level = "warn"
@@ -137,6 +141,7 @@ clear_output = True
             "handlers",
             "defaults",
             "variables",
+            "appendix",
             "debug_level",
         ]
 
