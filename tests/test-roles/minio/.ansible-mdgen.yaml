@@ -30,3 +30,5 @@ appendix:
       link: https://docs.min.io/docs/distributed-minio-quickstart-guide.html
     - description: Peter Murphy
       link: https://www.linkedin.com/in/peter-murphy-61493974/
+    - description: ansible-mdgen
+      link: https://pypi.org/project/ansible-mdgen/

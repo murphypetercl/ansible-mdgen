@@ -28,6 +28,10 @@ clear_output = True
     output_handlers_dir = "handlers"
     output_defaults_dir = "defaults"
     output_variables_dir = "variables"
+    output_files_dir = "files"
+
+    # Note: mkdocs does not interpret "templates" well as it is seen as a key word so using roletemplates as the output directory
+    output_templates_dir = "roletemplates"
 
     output_overwrite = False
     clear_output = False
@@ -50,8 +54,14 @@ clear_output = True
     handlers = None
     defaults = None
     variables = None
+    files = None
+    templates = None
 
     appendix = None
+
+    output_files = True
+
+    output_templates = True
 
     # default debug level
     debug_level = "warn"
@@ -132,6 +142,30 @@ clear_output = True
         elif not os.path.isabs(self.output_variables_dir):
             return os.path.realpath(self.get_output_dir()+"/"+self.output_variables_dir)
 
+    def get_output_files_dir(self):
+        """
+        get the relative path to cwd of the output directory for the documentation
+        :return: str path
+        """
+        if self.output_files_dir == "":
+            return os.path.realpath(self.get_output_dir())
+        elif os.path.isabs(self.output_files_dir):
+            return os.path.realpath(self.output_files_dir)
+        elif not os.path.isabs(self.output_files_dir):
+            return os.path.realpath(self.get_output_dir()+"/"+self.output_files_dir)
+
+    def get_output_templates_dir(self):
+        """
+        get the relative path to cwd of the output directory for the documentation
+        :return: str path
+        """
+        if self.output_templates_dir == "":
+            return os.path.realpath(self.get_output_dir())
+        elif os.path.isabs(self.output_templates_dir):
+            return os.path.realpath(self.output_templates_dir)
+        elif not os.path.isabs(self.output_templates_dir):
+            return os.path.realpath(self.get_output_dir()+"/"+self.output_templates_dir)
+
     def load_config_file(self, file):
 
         allow_to_overwrite = [
@@ -141,6 +175,8 @@ clear_output = True
             "handlers",
             "defaults",
             "variables",
+            "files",
+            "templates",
             "appendix",
             "debug_level",
         ]
