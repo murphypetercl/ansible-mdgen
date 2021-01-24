@@ -11,6 +11,7 @@ from mdutils.mdutils import MdUtils
 from ansiblemdgen.AutoDocumenterIndex import IndexWriter
 from ansiblemdgen.AutoDocumenterTasks import TasksWriter
 from ansiblemdgen.AutoDocumenterVariables import VariablesWriter
+from ansiblemdgen.AutoDocumenterFilesTemplates import FilesTemplatesWriter
 from ansiblemdgen.AutoDocumenterAppendix import AppendixWriter
 
 from ansiblemdgen.AutoDocumenterBase import WriterBase
@@ -41,6 +42,10 @@ class Writer(WriterBase):
 
         variablesWriter = VariablesWriter()
         variablesWriter.render()
+
+        if self.config.output_files is True or self.config.output_templates is True:
+            filesTemplatesWriter = FilesTemplatesWriter()
+            filesTemplatesWriter.render()
 
         if self.config.appendix is not None:
             appendixWriter = AppendixWriter()

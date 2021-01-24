@@ -22,8 +22,7 @@ class WriterBase:
     def iterateOnFilesAndDirectories(self, directory, output_directory):
         for (dirpath, dirnames, filenames) in walk(directory):
             for filename in filenames:
-                if filename.endswith('.yml'):
-                    self.createMDFile(dirpath, filename, output_directory)
+                self.createMDFile(dirpath, filename, output_directory)
 
             for dirname in dirnames:
                 self.iterateOnFilesAndDirectories(dirpath+"/"+dirname, output_directory+"/"+dirname)
