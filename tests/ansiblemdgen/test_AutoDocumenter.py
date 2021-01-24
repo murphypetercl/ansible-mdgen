@@ -47,3 +47,4 @@ class TestGenerator(object):
         assert os.path.isfile(str(tmpdir)+"/docs/tasks/users.md")
         assert os.path.isfile(str(tmpdir)+"/docs/tasks/file-system.md")
         assert os.path.isfile(str(tmpdir)+"/docs/tasks/minio.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/appendix.md")

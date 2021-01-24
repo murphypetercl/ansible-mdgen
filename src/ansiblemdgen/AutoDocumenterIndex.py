@@ -7,8 +7,6 @@ import os
 from os import walk
 from ansiblemdgen.Utils import SingleLog,FileUtils
 from mdutils.mdutils import MdUtils
-from ansiblemdgen.AutoDocumenterTasks import TasksWriter
-from ansiblemdgen.AutoDocumenterVariables import VariablesWriter
 
 class IndexWriter:
 
@@ -62,7 +60,7 @@ class IndexWriter:
             self.log.info("(createIndexMDFile) No meta/main.yml file")
         
         role_name = self.config.get_base_dir()[self.config.get_base_dir().rfind('/')+1:]
-        mdFile.new_header(level=1, title='About')
+        mdFile.new_header(level=1, title='Home')
 
         mdFile.new_line("---")
         mdFile.new_header(level=2, title='Role Name') 
