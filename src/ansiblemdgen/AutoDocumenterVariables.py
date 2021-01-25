@@ -18,6 +18,8 @@ class VariablesWriter(WriterBase):
 
     _all_descriptions = {}
 
+    where_referenced = ""
+
     def render(self):
 
         self.defaults_dir = self.config.get_base_dir()+"/defaults"
@@ -82,8 +84,30 @@ class VariablesWriter(WriterBase):
                         mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False))
                         mdFile.new_line("```")
 
+                        mdFile.new_line('Where Referenced', bold_italics_code='b', color='green')
+
+                        self.where_referenced = ""
+                        self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/tasks", mdFile)
+                        self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/defaults", mdFile)
+                        self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/vars", mdFile)
+                        self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/templates", mdFile)
+                        
+                        if self.where_referenced == "":
+                            mdFile.new_line("No references found")
+                        
+
             except yaml.YAMLError as exc:
                 print(exc)
+
+    def addVariableReferences(self, variable, filename, directory, mdFile):
+        for (dirpath, dirnames, refFilenames) in walk(directory):
+            for refFilename in refFilenames:
+                if dirpath+"/"+refFilename != filename:
+                    with open(dirpath+"/"+refFilename) as f:
+                        contents = f.read()
+                        if variable in contents:
+                            self.where_referenced = os.path.relpath(dirpath+"/"+refFilename, self.config.get_base_dir())
+                            mdFile.new_line(self.where_referenced)
 
     def getVarDescriptions(self, filename):
         file = open(filename, 'r')
