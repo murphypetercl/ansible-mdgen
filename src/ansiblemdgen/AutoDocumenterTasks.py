@@ -154,24 +154,29 @@ class TasksWriter(WriterBase):
                         if 'block' in task.keys():
                             for btask in task["block"]:
                                 try:
-                                    if btask["include_tasks"].startswith('{{') is False:
-                                        if filename not in self.flow.keys():
-                                            self.flow[filename] = []
-                                        self.flow[filename].append({"include": btask["include_tasks"]})
-                                        self.getFlowDataForFile(directory, btask["include_tasks"])
+                                    if 'include_tasks' in btask.keys():
+                                        self.getTaskReuseFile(btask, "include_tasks", filename)
+                                    elif 'import_tasks' in btask.keys():
+                                        self.getTaskReuseFile(btask, "import_tasks", filename)
                                 except Exception:
                                     pass
                         try:
-                            # ignore includes that are variables
-                            if task["include_tasks"].startswith('{{') is False:
-                                if filename not in self.flow.keys():
-                                    self.flow[filename] = []
-                                self.flow[filename].append({"include": task["include_tasks"]})
-                                self.getFlowDataForFile(directory, task["include_tasks"])
+                            if 'include_tasks' in task.keys():
+                                self.getTaskReuseFile(task, "include_tasks", filename)
+                            elif 'import_tasks' in task.keys():
+                                self.getTaskReuseFile(task, "import_tasks", filename)
                         except Exception:
                             pass
             except yaml.YAMLError as exc:
                 print(exc)
+
+    def getTaskReuseFile(self, task, reuse_type, filename):
+        if task[reuse_type].startswith('{{') is False:
+            if filename not in self.flow.keys():
+                self.flow[filename] = []
+            self.flow[filename].append({"include": task[reuse_type]})
+            self.getFlowDataForFile(directory, task[reuse_type])
+
 
     def getOrphanedFlowData(self, directory):
         for (dirpath, dirnames, filenames) in walk(directory):
