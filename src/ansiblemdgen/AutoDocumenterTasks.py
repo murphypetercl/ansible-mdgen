@@ -82,6 +82,11 @@ class TasksWriter(WriterBase):
                                 for btask in task["block"]:
                                     if 'name' in btask.keys():
                                         mdFile.new_paragraph('    * '+btask["name"])
+                                    if 'tags' in btask.keys():
+                                        mdFile.write('  \n')
+                                        mdFile.write('Tags: ', bold_italics_code='b', color='green')
+                                        mdFile.write(btask["tags"])
+
                             elif 'name' in task.keys():
                                 mdFile.new_paragraph('* '+task["name"])
                             else:
@@ -89,6 +94,11 @@ class TasksWriter(WriterBase):
                                 mdFile.new_line("```")
                                 mdFile.new_paragraph(yaml.safe_dump(task,  default_flow_style=False))
                                 mdFile.new_line("```")
+                            
+                            if 'tags' in task.keys():
+                                mdFile.write('  \n')
+                                mdFile.write('Tags: ', bold_italics_code='b', color='green')
+                                mdFile.write(task["tags"])
                         except Exception:
                             print(task)
                             pass
