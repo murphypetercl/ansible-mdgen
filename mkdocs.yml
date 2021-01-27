@@ -1,0 +1,12 @@
+site_name: Ansible-mdgen
+site_description: A python package to auto-generate documentation for ansible roles
+theme:
+  name: material
+
+nav:
+  - index.md
+  - getting-started.md
+  - Configuration:
+    - configuration/configuration.md
+    - configuration/file-combinations.md
+  - appendix.md

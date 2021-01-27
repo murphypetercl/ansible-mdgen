@@ -69,7 +69,7 @@ class AnsibleMdgen:
         # search for config file
         if args.conf != "":
             conf_file = os.path.abspath(args.conf)
-            if os.path.isfile(conf_file) and os.path.basename(conf_file) == self.config.config_file_name:
+            if os.path.isfile(conf_file) and os.path.basename(conf_file) != self.config.config_file_name:
                 self.config.load_config_file(conf_file)
                 # re apply log level based on config
                 self.log.set_level(self.config.debug_level)

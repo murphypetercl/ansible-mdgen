@@ -57,3 +57,5 @@ node_tests/*
 *.iml
 tests/test-roles/minio/docs/*
 tests/sample-project/doc/*
+
+site/
