@@ -39,10 +39,6 @@ clear_output = True
     # project base directory
     _base_dir = ""
 
-    # current directory of this object,
-    # used to get the default template directory
-    script_base_dir = ""
-
     # name of the config file to search for
     config_file_name = ".ansible-mdgen.yaml"
     # if config file is not in root of project, this is used to make output relative to config file
@@ -169,8 +165,18 @@ clear_output = True
     def load_config_file(self, file):
 
         allow_to_overwrite = [
+            "output_overwrite",
+            "clear_output",
             "base_dir",
             "output_dir",
+            "output_tasks_dir",
+            "output_handlers_dir",
+            "output_defaults_dir",
+            "output_variables_dir",
+            "output_files_dir",
+            "output_templates_dir",
+            "output_files",
+            "output_templates",
             "tasks",
             "handlers",
             "defaults",
