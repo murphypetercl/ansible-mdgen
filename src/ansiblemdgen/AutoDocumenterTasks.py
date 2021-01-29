@@ -48,10 +48,10 @@ class TasksWriter(WriterBase):
         self.log.debug("(createMDFile) filename: "+filename)
         self.log.debug("(createMDFile) output_directory: "+output_directory)
         
-        if output_directory == self.config.get_output_tasks_dir():
-            docspath = dirpath.replace(self.tasks_dir,output_directory)
+        if output_directory.find(self.config.get_output_tasks_dir()) != -1:
+            docspath = dirpath.replace(self.tasks_dir,self.config.get_output_tasks_dir())
         else:
-            docspath = dirpath.replace(self.handlers_dir,output_directory)
+            docspath = dirpath.replace(self.handlers_dir,self.config.get_output_handlers_dir())
         self.log.debug("(createMDFile) docspath: "+docspath)
 
         if not os.path.exists(docspath):
