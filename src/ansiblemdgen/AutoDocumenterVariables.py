@@ -70,18 +70,20 @@ class VariablesWriter(WriterBase):
 
         with open(filename, 'r') as stream:
             try:
+                # vault encrypted variables throw errors on loading so replacing the ! with ____ to workaround that and reverting it when outputting to the value.
+                stream = stream.read().replace('!vault','____vault')
                 variables = yaml.safe_load(stream)
 
                 if variables != None:
                     for variable in variables:
 
                         mdFile.new_header(level=2, title=variable)
-                        
+
                         if(variable in self._all_descriptions):
                             mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[variable][0]["value"],  default_flow_style=False))
 
                         mdFile.new_line("```")
-                        mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False))
+                        mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False).replace('____vault','!vault'))
                         mdFile.new_line("```")
 
                         mdFile.new_line('Where Referenced', bold_italics_code='b', color='green')
