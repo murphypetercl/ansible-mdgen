@@ -44,7 +44,14 @@ minio_server_opts: ""
 minio_access_key: ""
 
 # @var: minio_secret_key: Minio secret key
-minio_secret_key: ""
+# minio_secret_key: ""
+minio_secret_key: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;minio_secret_key
+          33346565393338363937386137393732306638303961306663373635653738323063373439633462
+          3836313831343265656661376534653834363936313237640a616435386532306461396135353766
+          38323733623163386632616630326130336534383130326136303162393866643634616566383131
+          3636626135653233630a396564353933646432343935303566626135653836333162663332303164
+          3136
 
 # @var: minio_server_env_extra: Additional environment variables to be set in minio server environment
 minio_server_env_extra: ""
