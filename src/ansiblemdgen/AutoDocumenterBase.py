@@ -20,14 +20,17 @@ class WriterBase:
             os.makedirs(doc_directory)
     
     def iterateOnFilesAndDirectories(self, directory, output_directory):
+        self.log.debug("(iterateOnFilesAndDirectories) directory: "+ directory)
+        self.log.debug("(iterateOnFilesAndDirectories) output_directory: "+ output_directory)
+
         for (dirpath, dirnames, filenames) in walk(directory):
+            self.log.debug("(iterateOnFilesAndDirectories) dirpath: "+ dirpath)
+            relPath = dirpath.replace(directory,"")
+
             for filename in filenames:
                 #ignore any existing md files and vault encrypted files
                 if not filename.endswith('.md') and self.isFileVaultEncrypted(dirpath, filename) is False:
-                        self.createMDFile(dirpath, filename, output_directory)
-
-            for dirname in dirnames:
-                self.iterateOnFilesAndDirectories(dirpath+"/"+dirname, output_directory+"/"+dirname)
+                        self.createMDFile(dirpath, filename, output_directory+"/"+relPath)
 
     def iterateOnCombinations(self, directory, combinations, output_directory):
         for combination in combinations:

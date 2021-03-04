@@ -76,12 +76,13 @@ class IndexWriter:
         mdFile.new_header(level=2, title='Dependencies') 
 
         if dependencies != []:
-            dependency_table_entries = ["Dependencies"]
-
             for dependency in dependencies:
-                dependency_table_entries.extend([yaml.dump(dependency,  default_flow_style=False)])
-                for dep_part in dependency:
-                    mdFile.new_line("> "+dep_part+": "+dependency[dep_part])
+                if isinstance(dependency, dict):
+                    for dep_part in dependency:
+                        mdFile.new_line("> "+dep_part+": "+dependency[dep_part])
+                else:
+                    mdFile.new_line("> "+ dependency)
+
                 mdFile.new_line()
         else:
             mdFile.new_line('None')

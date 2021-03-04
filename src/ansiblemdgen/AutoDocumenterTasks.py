@@ -92,7 +92,7 @@ class TasksWriter(WriterBase):
                             else:
                                 mdFile.new_paragraph('* No description available for this task - here is the definition:')
                                 mdFile.new_line("```")
-                                mdFile.new_paragraph(yaml.safe_dump(task,  default_flow_style=False))
+                                mdFile.new_paragraph(yaml.safe_dump(task,  default_flow_style=False, allow_unicode=True))
                                 mdFile.new_line("```")
                             
                             if 'tags' in task.keys():
