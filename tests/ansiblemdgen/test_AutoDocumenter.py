@@ -29,6 +29,7 @@ class TestGenerator(object):
         assert os.path.isfile(str(tmpdir)+"/docs/tasks/minio/users.md")
         assert os.path.isfile(str(tmpdir)+"/docs/tasks/minio/firewall.md")
         assert os.path.isfile(str(tmpdir)+"/docs/handlers/main.md")
+        assert os.path.isfile(str(tmpdir)+"/docs/roletemplates/test/test.env.j2.md")
 
     def test_render_with_config(self,tmpdir):
         config = SingleConfig()

@@ -46,6 +46,10 @@ class FilesTemplatesWriter(WriterBase):
     def createMDFile(self, dirpath, filename, output_directory):
 
         self.log.info("(createMDFile) Create MD File")
+        self.log.debug("(createMDFile) dirpath: "+ dirpath)
+        self.log.debug("(createMDFile) filename: "+ filename)
+        self.log.debug("(createMDFile) output_directory: "+ output_directory)
+
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
