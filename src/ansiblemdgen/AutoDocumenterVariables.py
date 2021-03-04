@@ -80,10 +80,10 @@ class VariablesWriter(WriterBase):
                         mdFile.new_header(level=2, title=variable)
 
                         if(variable in self._all_descriptions):
-                            mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[variable][0]["value"],  default_flow_style=False))
+                            mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[variable][0]["value"],  default_flow_style=False, allow_unicode=True))
 
                         mdFile.new_line("```")
-                        mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False).replace('____vault','!vault'))
+                        mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False, allow_unicode=True).replace('____vault','!vault'))
                         mdFile.new_line("```")
 
                         mdFile.new_line('Where Referenced', bold_italics_code='b', color='green')
