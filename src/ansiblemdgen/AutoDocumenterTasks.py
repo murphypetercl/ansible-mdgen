@@ -98,7 +98,16 @@ class TasksWriter(WriterBase):
                             if 'tags' in task.keys():
                                 mdFile.write('  \n')
                                 mdFile.write('Tags: ', bold_italics_code='b', color='green')
-                                mdFile.write(task["tags"])
+                                if isinstance(task["tags"], list):
+                                    taglist = ""
+                                    for tag in task["tags"]:
+                                        if taglist == "":
+                                            taglist = tag
+                                        else:
+                                            taglist = taglist+","+tag
+                                    mdFile.write(taglist)
+                                else:
+                                    mdFile.write(task["tags"])
                         except Exception:
                             print(task)
                             pass
