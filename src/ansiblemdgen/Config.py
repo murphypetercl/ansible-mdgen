@@ -62,6 +62,8 @@ clear_output = True
     # default debug level
     debug_level = "warn"
 
+    transpose_variable_table = False
+
     def set_base_dir(self,dir):
         self._base_dir = dir
 
@@ -185,6 +187,7 @@ clear_output = True
             "templates",
             "appendix",
             "debug_level",
+            "transpose_variable_table"
         ]
 
         with open(file, 'r') as yaml_file:
