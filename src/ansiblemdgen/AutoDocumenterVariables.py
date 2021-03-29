@@ -16,7 +16,7 @@ class VariablesWriter(WriterBase):
     defaults_dir = None
     vars_dir = None
 
-    _all_descriptions = {}
+    _all_var_meta = {}
 
     where_referenced = ""
 
@@ -79,14 +79,12 @@ class VariablesWriter(WriterBase):
 
                         mdFile.new_header(level=2, title=variable)
 
-                        if(variable in self._all_descriptions):
-                            mdFile.new_paragraph(yaml.safe_dump(self._all_descriptions[variable][0]["value"],  default_flow_style=False, allow_unicode=True))
-
+                        if(variable in self._all_var_meta):
+                            mdFile.new_paragraph(yaml.safe_dump(self._all_var_meta[variable]["description"],  default_flow_style=False, allow_unicode=True))
+                                
                         mdFile.new_line("```")
                         mdFile.new_paragraph(yaml.safe_dump(variables[variable],  default_flow_style=False, allow_unicode=True).replace('____vault','!vault'))
                         mdFile.new_line("```")
-
-                        mdFile.new_line('Where Referenced', bold_italics_code='b', color='green')
 
                         self.where_referenced = ""
                         self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/tasks", mdFile)
@@ -94,8 +92,48 @@ class VariablesWriter(WriterBase):
                         self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/vars", mdFile)
                         self.addVariableReferences(variable, filename, self.config.get_base_dir()+"/templates", mdFile)
                         
-                        if self.where_referenced == "":
-                            mdFile.new_line("No references found")
+                        table_entries = []
+                        table_data = []
+
+                        if (not self.config.transpose_variable_table):
+                            num_columns = 1
+
+                            if(variable in self._all_var_meta):
+                                for metaKey in self._all_var_meta[variable].keys():
+                                    # Description is displayed outside of table so ignore this here
+                                    if (metaKey.lower() != 'description'):
+                                        table_entries.append(metaKey.capitalize().replace('_',' ').replace('-',' '))
+                                        table_data.append(str(self._all_var_meta[variable][metaKey]))
+                                        num_columns = num_columns + 1 
+
+                                table_entries.append("Where referenced")
+                                table_data.append(self.where_referenced)
+
+                                table_entries.extend(table_data)
+
+                                num_rows = 2
+
+                                mdFile.new_table(columns=num_columns, rows=num_rows, text=table_entries, text_align='left')
+                        else:
+                            num_columns = 2
+                            num_rows = 1
+                            table_entries.append('Meta')
+                            table_entries.append('Value')
+
+                            if(variable in self._all_var_meta):
+                                for metaKey in self._all_var_meta[variable].keys():
+                                    # Description is displayed outside of table so ignore this here
+                                    if (metaKey.lower() != 'description'):
+                                        table_data.append('<strong>'+metaKey.capitalize().replace('_',' ').replace('-',' ')+'</strong>')
+                                        table_data.append(str(self._all_var_meta[variable][metaKey]))
+                                        num_rows = num_rows + 1 
+
+                                table_data.append('<strong>Where referenced</strong>')
+                                table_data.append(self.where_referenced)
+                                table_entries.extend(table_data)
+                                num_rows = num_rows + 1
+
+                                mdFile.new_table(columns=num_columns, rows=num_rows, text=table_entries, text_align='left')
                         
 
             except yaml.YAMLError as exc:
@@ -108,8 +146,7 @@ class VariablesWriter(WriterBase):
                     with open(dirpath+"/"+refFilename) as f:
                         contents = f.read()
                         if variable in contents:
-                            self.where_referenced = os.path.relpath(dirpath+"/"+refFilename, self.config.get_base_dir())
-                            mdFile.new_line(self.where_referenced)
+                            self.where_referenced = self.where_referenced + os.path.relpath(dirpath+"/"+refFilename, self.config.get_base_dir()) + "<br/>"
 
     def getVarDescriptions(self, filename):
         file = open(filename, 'r')
@@ -124,24 +161,43 @@ class VariablesWriter(WriterBase):
                 # step1 remove the annotation
                 reg1 = "(\#\ *\@var:\ *)"
                 line1 = re.sub(reg1, '', line).strip()
+                
+                if (line1 != ''):
+                    # step3 take the main key value from the annotation
+                    parts = line1.split(":",1)
+                    key = str(parts[0].strip())
+                    value = str(parts[1].strip())
 
-                # step3 take the main key value from the annotation
-                parts = line1.split(":",1)
-                key = str(parts[0].strip())
-                value = str(parts[1].strip())
+                    if key not in self._all_var_meta.keys():
+                        self._all_var_meta[key] = []
 
-                item = AnnotationItem()
+                    self._all_var_meta[key] = {'description': value}
+                else:
+                    # if line has no data then this must be the start of meta block
+                    try:
+                        self.getVarMeta(file)
+                    except Exception as err:
+                        print("File: "+filename+" - "+str(err))
 
-                if key.strip() == "":
-                    key = "_unset_"
-                item.key = key
+    def getVarMeta(self, file):
+        meta = ""
+        varLine = file.readline()
+        while(varLine):
+            if (varLine[0] != '#'):
+                raise Exception("Missing @var_end annotation or blank line identified. Please fix variable annotation.")
 
-                item.value = value
+            if (varLine.strip() == '# @var_end'):
+                break
+            else:
+                meta += varLine.replace('# ','')
+                varLine = file.readline()
 
-                if item.key not in self._all_descriptions.keys():
-                    self._all_descriptions[item.key] = []
+        _meta = yaml.safe_load(meta)
 
-                self._all_descriptions[item.key].append(item.get_obj())
+        for key in _meta.keys():
+            if key not in self._all_var_meta.keys():
+                self._all_var_meta[key] = _meta.get(key)
+        
 
     def createMDCombinationFile(self, comboFilename, directory, output_directory, filenamesToCombine):
 
@@ -161,21 +217,3 @@ class VariablesWriter(WriterBase):
             self.addVariables(directory+"/"+filename['name'], mdFile)
 
         mdFile.create_md_file()
-
-class AnnotationItem:
-
-    key = ""  # annotation identifying key
-    value = ""  # annotation data
-
-    def __str__(self):
-        s = "{"
-        s += "key: "+self.key+", "
-        s += "value: "+self.value+", "
-        s += "}"
-        return s
-
-    def get_obj(self):
-        return {
-            "key": self.key,
-            "value": self.value,
-        }
