@@ -102,11 +102,11 @@ class VariablesWriter(WriterBase):
                                 for metaKey in self._all_var_meta[variable].keys():
                                     # Description is displayed outside of table so ignore this here
                                     if (metaKey.lower() != 'description'):
-                                        table_entries.append(metaKey.capitalize())
+                                        table_entries.append(metaKey.capitalize().replace('_',' ').replace('-',' '))
                                         table_data.append(str(self._all_var_meta[variable][metaKey]))
                                         num_columns = num_columns + 1 
 
-                                table_entries.append("Where Referenced")
+                                table_entries.append("Where referenced")
                                 table_data.append(self.where_referenced)
 
                                 table_entries.extend(table_data)
@@ -124,11 +124,11 @@ class VariablesWriter(WriterBase):
                                 for metaKey in self._all_var_meta[variable].keys():
                                     # Description is displayed outside of table so ignore this here
                                     if (metaKey.lower() != 'description'):
-                                        table_data.append('<strong>'+metaKey.capitalize()+'</strong>')
+                                        table_data.append('<strong>'+metaKey.capitalize().replace('_',' ').replace('-',' ')+'</strong>')
                                         table_data.append(str(self._all_var_meta[variable][metaKey]))
                                         num_rows = num_rows + 1 
 
-                                table_data.append('<strong>Where Referenced</strong>')
+                                table_data.append('<strong>Where referenced</strong>')
                                 table_data.append(self.where_referenced)
                                 table_entries.extend(table_data)
                                 num_rows = num_rows + 1
@@ -174,12 +174,18 @@ class VariablesWriter(WriterBase):
                     self._all_var_meta[key] = {'description': value}
                 else:
                     # if line has no data then this must be the start of meta block
-                    self.getVarMeta(file)
+                    try:
+                        self.getVarMeta(file)
+                    except Exception as err:
+                        print("File: "+filename+" - "+str(err))
 
     def getVarMeta(self, file):
         meta = ""
         varLine = file.readline()
         while(varLine):
+            if (varLine[0] != '#'):
+                raise Exception("Missing @var_end annotation or blank line identified. Please fix variable annotation.")
+
             if (varLine.strip() == '# @var_end'):
                 break
             else:
@@ -191,6 +197,7 @@ class VariablesWriter(WriterBase):
         for key in _meta.keys():
             if key not in self._all_var_meta.keys():
                 self._all_var_meta[key] = _meta.get(key)
+        
 
     def createMDCombinationFile(self, comboFilename, directory, output_directory, filenamesToCombine):
 

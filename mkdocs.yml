@@ -9,4 +9,5 @@ nav:
   - Configuration:
     - configuration/configuration.md
     - configuration/file-combinations.md
+  - releases.md
   - appendix.md

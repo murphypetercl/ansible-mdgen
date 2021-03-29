@@ -22,6 +22,60 @@ To provide and output variable descriptions add a comment with the var annotatio
 # @var: <variable_name>: <variable_description>
 ```
 
+You may want to provide further details on the variable. To do this create an @var block as follows:
+```
+# @var: 
+# <variable_name>:
+#   description: <variable_description>
+#   <some_meta>: <some_value>
+#   <some_other_meta>: <some_other_value>
+# @var_end
+```
+For example:
+```
+# @var: 
+# minio_server_datadirs:
+#   description: Minio server data directory
+#   type: string
+#   vault_required: true
+# @var_end
+```
+This will be displayed as follows:
+
+<strong>minio_server_datadirs</strong>
+
+Minio server data directory
+...
+  
+```
+
+/var/lib/minio
+...
+  
+```
+|Type|Vault required|Where referenced|
+| :--- | :--- | :--- |
+|string|True|templates/minio.env.j2<br/>|
+
+If there are many var fields you may want to transpose the table for a better visual display. To do this set the transpose_variable_table variable to True in your configuration file. The output will then be displayed as follows:
+
+<strong>minio_server_datadirs</strong>
+
+Minio server data directory
+...
+  
+```
+
+/var/lib/minio
+...
+  
+```
+|Meta|Value|
+| :--- | :--- |
+|<strong>Type</strong>|string|
+|<strong>Vault required</strong>|True|
+|<strong>Where referenced</strong>|templates/minio.env.j2<br/>|
+
 ## To debug
 
 Pass the options -vvv for debugging
@@ -49,7 +103,7 @@ See [here](https://www.mkdocs.org/) for more details on mkdocs.
 
 I like to use the [material theme](https://squidfunk.github.io/mkdocs-material/getting-started/) for displaying my docs similar to the docs you are looking at right now but that is completely an end user choice.
 
-Also you may want to option to download the docs as a PDF file. To do that, install the following mkdocs plugin:
+Also you may want the option to download the docs as a PDF file. To do that, install the following mkdocs plugin:
 ```
 mkdocs-with-pdf
 ```

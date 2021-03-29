@@ -29,6 +29,7 @@ Ansible-mdgen provides alot of configuration options. You can pass some configur
 |``clear_output``|Determines if you want to clear all the current docs in the output directory|``False``|
 |``output_templates``|Determines if you want to output the templates|``True``|
 |``output_files``|Determines if you want to output the files|``True``|
+|``transpose_variable_table``|Determines if you want to transpose the variable meta table|``False``|
 
 ### File Combinations
 For file combinations see [here](../configuration/file-combinations.md)
