@@ -340,6 +340,22 @@
   
   
     <li class="md-nav__item">
+      <a href="../releases/" class="md-nav__link">
+        Releases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../appendix/" class="md-nav__link">
         Appendix
       </a>
@@ -446,6 +462,78 @@
 <p>To provide and output variable descriptions add a comment with the var annotation as follows:</p>
 <pre><code># @var: &lt;variable_name&gt;: &lt;variable_description&gt;
 </code></pre>
+<p>You may want to provide further details on the variable. To do this create an @var block as follows:</p>
+<pre><code># @var: 
+# &lt;variable_name&gt;:
+#   description: &lt;variable_description&gt;
+#   &lt;some_meta&gt;: &lt;some_value&gt;
+#   &lt;some_other_meta&gt;: &lt;some_other_value&gt;
+# @var_end
+</code></pre>
+<p>For example:</p>
+<pre><code># @var: 
+# minio_server_datadirs:
+#   description: Minio server data directory
+#   type: string
+#   vault_required: true
+# @var_end
+</code></pre>
+<p>This will be displayed as follows:</p>
+<p><strong>minio_server_datadirs</strong></p>
+<p>Minio server data directory
+...</p>
+<pre><code>
+/var/lib/minio
+...
+
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Type</th>
+<th align="left">Vault required</th>
+<th align="left">Where referenced</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">string</td>
+<td align="left">True</td>
+<td align="left">templates/minio.env.j2<br/></td>
+</tr>
+</tbody>
+</table>
+<p>If there are many var fields you may want to transpose the table for a better visual display. To do this set the transpose_variable_table variable to True in your configuration file. The output will then be displayed as follows:</p>
+<p><strong>minio_server_datadirs</strong></p>
+<p>Minio server data directory
+...</p>
+<pre><code>
+/var/lib/minio
+...
+
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Meta</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><strong>Type</strong></td>
+<td align="left">string</td>
+</tr>
+<tr>
+<td align="left"><strong>Vault required</strong></td>
+<td align="left">True</td>
+</tr>
+<tr>
+<td align="left"><strong>Where referenced</strong></td>
+<td align="left">templates/minio.env.j2<br/></td>
+</tr>
+</tbody>
+</table>
 <h2 id="to-debug">To debug</h2>
 <p>Pass the options -vvv for debugging</p>
 <h2 id="next-steps">Next steps</h2>
@@ -463,7 +551,7 @@
 <p>See <a href="https://www.mkdocs.org/">here</a> for more details on mkdocs.</p>
 <h3 id="tips">Tips</h3>
 <p>I like to use the <a href="https://squidfunk.github.io/mkdocs-material/getting-started/">material theme</a> for displaying my docs similar to the docs you are looking at right now but that is completely an end user choice.</p>
-<p>Also you may want to option to download the docs as a PDF file. To do that, install the following mkdocs plugin:</p>
+<p>Also you may want the option to download the docs as a PDF file. To do that, install the following mkdocs plugin:</p>
 <pre><code>mkdocs-with-pdf
 </code></pre>
 <p>And add the configuration to your mkdocs.yml</p>
