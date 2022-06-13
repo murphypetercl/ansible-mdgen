@@ -5,12 +5,13 @@ import yaml
 from ansiblemdgen.Utils import Singleton
 from ansiblemdgen.Utils import SingleLog
 
+
 class Config:
     sample_config = """---
 # About Ansible mdgen: Generate documentation from roles based on the task names
 # https://github.com/......
 # filename: .ansible-mdgen.yaml
-# base directory to scan, relative dir to configuration file 
+# base directory to scan, relative dir to configuration file
 # base_dir: "./"
 # documentation output directory, relative dir to configuration file.
 output_dir: "./docs"
@@ -43,8 +44,7 @@ clear_output = True
     config_file_name = ".ansible-mdgen.yaml"
     # if config file is not in root of project, this is used to make output relative to config file
     _config_file_dir = ""
-
-
+    yaml_extension = ".yml"
 
     tasks = None
     handlers = None
@@ -64,7 +64,7 @@ clear_output = True
 
     transpose_variable_table = False
 
-    def set_base_dir(self,dir):
+    def set_base_dir(self, dir):
         self._base_dir = dir
 
     def get_base_dir(self):
@@ -198,7 +198,8 @@ clear_output = True
                 if data:
                     for item_to_configure in allow_to_overwrite:
                         if item_to_configure in data.keys():
-                            self.__setattr__(item_to_configure,data[item_to_configure])
+                            self.__setattr__(
+                                item_to_configure, data[item_to_configure])
 
             except yaml.YAMLError as exc:
                 print(exc)
