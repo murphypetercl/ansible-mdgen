@@ -41,7 +41,7 @@ class IndexWriter:
         min_ansible_version = ''
         dependencies = []
 
-        galaxy_metafile = self.config.get_base_dir()+'/meta/main.yml'
+        galaxy_metafile = self.config.get_base_dir()+'/meta/main'+self.config.yaml_extension
 
         if os.path.isfile(galaxy_metafile):
             with open(galaxy_metafile, 'r') as stream:
@@ -57,7 +57,8 @@ class IndexWriter:
                 except yaml.YAMLError as exc:
                     print(exc)
         else:
-            self.log.info("(createIndexMDFile) No meta/main.yml file")
+            self.log.info(
+                f"(createIndexMDFile) No meta/main{self.config.yaml_extension} file")
         
         role_name = self.config.get_base_dir()[self.config.get_base_dir().rfind('/')+1:]
         mdFile.new_header(level=1, title='Home')

@@ -55,7 +55,7 @@ class FilesTemplatesWriter(WriterBase):
 
         title_prefix = output_directory[output_directory.rfind('/')+1:].title()
 
-        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace('.yml',''))
+        mdFile = MdUtils(file_name=output_directory+"/"+filename.replace(self.config.yaml_extension,''))
 
         mdFile.new_header(level=1, title=filename) 
 

@@ -57,7 +57,7 @@ class TasksWriter(WriterBase):
         if not os.path.exists(docspath):
             os.makedirs(docspath)
 
-        mdFile = MdUtils(file_name=docspath+"/"+filename.replace('.yml',''))
+        mdFile = MdUtils(file_name=docspath+"/"+filename.replace(self.config.yaml_extension,''))
         mdFile.new_header(level=1, title=filename) 
         self.addTasks(dirpath+"/"+filename, mdFile)
 
@@ -161,7 +161,7 @@ class TasksWriter(WriterBase):
         mdFile.create_md_file()
 
     def getFlowData(self, directory):
-        self.getFlowDataForFile(directory, 'main.yml')
+        self.getFlowDataForFile(directory, f'main{self.config.yaml_extension}')
         self.getOrphanedFlowData(directory)
 
     def getFlowDataForFile(self, directory, filename):

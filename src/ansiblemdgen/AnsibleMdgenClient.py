@@ -42,6 +42,8 @@ class AnsibleMdgen:
         parser.add_argument('-o', action="store", dest="output", type=str, help='Define the destination '
                                                                                'folder of your documenation')
 
+        parser.add_argument('-a', action='store_true', help='Set .yaml as role files extension'
+                                                            'By default .yml files are parsed')
         parser.add_argument('-w', action="store_true", help='Clear the output directory without asking')
         parser.add_argument('-y', action='store_true', help='Overwrite the output without asking')
 
@@ -107,6 +109,10 @@ class AnsibleMdgen:
         # Overwrite
         if args.y is True:
             self.config.output_overwrite = True
+
+        # Yaml extension
+        if args.a is True:
+            self.config.yaml_extension = '.yaml'
 
         # output dir
         if args.output is not None:
