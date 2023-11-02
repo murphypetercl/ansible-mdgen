@@ -28,8 +28,8 @@ class WriterBase:
             relPath = dirpath.replace(directory,"")
 
             for filename in filenames:
-                #ignore any existing md files and vault encrypted files
-                if not filename.endswith('.md') and self.isFileVaultEncrypted(dirpath, filename) is False:
+                #ignore any existing md files, archive and vault encrypted files
+                if not filename.endswith('.md') and not filename.endswith('.gz') and self.isFileVaultEncrypted(dirpath, filename) is False:
                         self.createMDFile(dirpath, filename, output_directory+"/"+relPath)
 
     def iterateOnCombinations(self, directory, combinations, output_directory):
